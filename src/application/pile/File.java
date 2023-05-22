@@ -1,9 +1,14 @@
 /*
- * PileLIFO.java                                    16 mai 2023
+ * File.java                                      16 mai 2023
  * IUT Rodez, info1 2022-2023, pas de copyright ni "copyleft"
  */
 
 package application.pile;
+
+import application.labyrinthe.Sommet;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** 
  * TODO comment class responsibility (SRP)
@@ -11,5 +16,50 @@ package application.pile;
  *
  */
 public class File {
+    
+    /** Liste des éléments de la pile LIFO */
+    private List<Object> pile;
+    
+    /** TODO comment initial state
+     * 
+     */
+    public File() {
+        this.pile = new ArrayList<Object>();
+    }
+    
+    /**
+     * TODO comment method role
+     * @param objet
+     */
+    public void empiler(Object objet) {
+        pile.add(objet);
+    }
+    
+    /**
+     * TODO comment method role
+     *
+     */
+    public void depiler() {
+       pile.remove(pile.size() - 1); 
+    }
+    
+    /**
+     * TODO comment method role
+     * @return 0
+     */
+    public boolean estVide() {
+        return pile.size() == 0;
+    }
+    
+    /**
+     * TODO comment method role
+     * @return 0
+     */
+    public Sommet getSommet() {
+        if (this.estVide()) {
+            throw new IllegalArgumentException();
+        }
+        return new Sommet(pile.size() - 1);
+    }
 
 }
