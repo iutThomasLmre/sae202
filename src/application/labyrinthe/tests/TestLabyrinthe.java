@@ -5,6 +5,7 @@
 package application.labyrinthe.tests;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,9 +33,9 @@ class TestLabyrinthe {
      */
     @BeforeEach
     void setUp() throws Exception {
-        // Créer un labyrinthe avec 10 pièces
+        // Créer un labyrinthe avec 35 pièces
         correctes = new ArrayList<Labyrinthe>();
-        correctes.add(new Labyrinthe(10));
+        correctes.add(new Labyrinthe(35));
     }
 
     /** 
@@ -50,13 +51,11 @@ class TestLabyrinthe {
         List<Arete> aretes = correctes.get(0).getAretes();
 
         // Vérifier que la liste des arêtes n'est pas vide
-        System.out.println(aretes.size());
         assertFalse(aretes.isEmpty()); 
-        
+                        
         List<Sommet> pieces = correctes.get(0).getSommets();
-
+        
         for (int i = 0; i < pieces.size(); i++) {
-            System.out.println(i);
             // Vérifier que tous les sommets ont été parcourus
             assertTrue(pieces.get(i).estParcouru()); 
         }
@@ -73,7 +72,7 @@ class TestLabyrinthe {
         List<Sommet> voisins = correctes.get(0).trouverVoisinsNonParcourus(sommet);
 
         // Vérifier le nombre de voisins non parcourus
-        assertEquals(1, voisins.size()); 
+        assertEquals(2, voisins.size()); 
         // Vérifier que le voisin n'est pas parcouru
         assertFalse(voisins.get(0).estParcouru()); 
     }
