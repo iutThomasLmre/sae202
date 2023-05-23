@@ -31,7 +31,7 @@ class TestFile {
      */
     @BeforeEach
     void setUp() throws Exception {
-        correctes = new ArrayList<File>(15);
+        correctes = new ArrayList<File>();
         correctes.add(new File());
     }
 
@@ -44,6 +44,7 @@ class TestFile {
     @Test
     @DisplayName("test de la méthode getSommet")
     void testGetSommet() {
+        correctes.get(0).empiler(new Sommet(1));
         System.out.println(correctes.get(0).getSommet());
     }
 }

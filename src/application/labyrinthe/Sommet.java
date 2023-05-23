@@ -63,6 +63,6 @@ public class Sommet {
      * @param numero
      */
     private static boolean estValide(int numero) {
-        return numero > 0 && numero < Integer.MAX_VALUE - 1;
+        return numero >= 0 && numero < Integer.MAX_VALUE - 1;
     }
 }

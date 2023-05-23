@@ -18,16 +18,13 @@ public class Labyrinthe {
 
     /** Le nombre de pièces (sommets) que le labyrinthe (graphe) va comporter */
     @SuppressWarnings("unused")
-    private int nombrePieces;
+    private int nombreSommets;
 
-    /** Liste des pièces du labyrinthe */
-    private List<Sommet> pieces;
+    /** Liste des pièces (sommets) du labyrinthe */
+    private List<Sommet> sommets;
 
-    /** Liste des murs (arêtes) qui va former le lybinrinthe */
-    private List<Arete> murs;
-
-    /** TODO comment */
-    private File file;
+    /** Liste des portes (arêtes) qui va former le lybinrinthe */
+    private List<Arete> aretes;
 
     /**
      * TODO comment initial state
@@ -38,14 +35,14 @@ public class Labyrinthe {
             throw new IllegalArgumentException();
         }
 
-        this.nombrePieces = nombrePieces;
-        this.murs   = new ArrayList<Arete>();
-        this.pieces = new ArrayList<Sommet>();
+        this.nombreSommets = nombrePieces;
+        this.aretes  = new ArrayList<Arete>();
+        this.sommets = new ArrayList<Sommet>();
 
         // Création des pièces (sommets) du labyrinthe (graphe)
-        for (int i = 1; i <= nombrePieces; i++) {
+        for (int i = 0; i < nombrePieces; i++) {
             Sommet sommet = new Sommet(i);
-            this.pieces.add(sommet);
+            this.sommets.add(sommet);
         }
     }
 
@@ -54,33 +51,52 @@ public class Labyrinthe {
      *
      */
     public void constructionBacktracking() {
+
+        File file;
+        int randomSommet;
+        int randomVoisin;
+        Sommet sommetInitial;
+
         // Choisir aléatoirement un sommet initial
-        Random randomSommet  = new Random();
-        Sommet sommetInitial = pieces.get(randomSommet.nextInt(pieces.size()));
+        randomSommet  = (int)(Math.random() * this.nombreSommets);
+        sommetInitial = sommets.get(randomSommet);
         sommetInitial.marquerParcouru();
-        file.empiler(sommetInitial);
-        
+
+        System.out.println(sommetInitial.toString());
+
+        // Créer une pile LIFO initialement vide
+        file = new File();
+        // Empiler le sommet courant (initial) à traiter
+        file.empiler(sommetInitial);  
+
         // Parcours en backtrack jusqu'à ce que tous les sommets soient parcourus
         while (!file.estVide()) {
-            Sommet sommetCourant = file.getSommet();
+            Sommet sommetCourant = (Sommet) file.getSommet();
             List<Sommet> voisinsNonParcourus 
                          = trouverVoisinsNonParcourus(sommetCourant);
 
             if (voisinsNonParcourus.isEmpty()) {
+                // Dépiler le sommet courant
                 file.depiler();
+                // Le nouveau sommet de pile devient le sommet courant (si pile vide)
                 if (!file.estVide()) {
-                    sommetCourant = file.getSommet();
+                    sommetCourant = (Sommet) file.getSommet();
                 }
             } else {
-                Sommet voisinChoisi = voisinsNonParcourus.get(
-                                      randomSommet.nextInt(
-                                      voisinsNonParcourus.size()));
-                Arete arete = new Arete(sommetCourant, voisinChoisi);
-                murs.add(arete);
+                // Choisir aléatoirement un des voisins non parcouru
+                randomVoisin = (int)(Math.random() * voisinsNonParcourus.size());
+                Sommet voisinChoisi = voisinsNonParcourus.get(randomVoisin);
+                // Créer l'arête sommet courant -- voisin
+                Arete porte = new Arete(sommetCourant, voisinChoisi);
+                // casser le mur et créer une porte
+                aretes.add(porte);
+                // Parcourir le voisin
                 voisinChoisi.marquerParcouru();
+                // Devient le sommet courrant en étant empilé
                 file.empiler(voisinChoisi);
             }
         }
+        System.out.println("fin backtrack");
     }
 
     /**
@@ -92,19 +108,21 @@ public class Labyrinthe {
         List<Sommet> voisinsNonParcourus = new ArrayList<Sommet>();
 
         int numeroSommet = sommet.getNumero();
-        int nombreSommets = pieces.size();
-
+        System.out.println(numeroSommet);
+        
         // Vérification du voisin de gauche
-        if (   numeroSommet -1 >= 0
-            && !pieces.get(numeroSommet + 1).estParcouru()) {
-            voisinsNonParcourus.add(pieces.get(numeroSommet - 1));
+        if (   numeroSommet - 1 >= 0
+            && !sommets.get(numeroSommet - 1).estParcouru()) {
+            voisinsNonParcourus.add(sommets.get(numeroSommet - 1));
         }
+
 
         // Vérification du voisin de droite
-        if (   numeroSommet + 1 < nombreSommets
-            && !pieces.get(numeroSommet + 1).estParcouru()) {
-            voisinsNonParcourus.add(pieces.get(numeroSommet + 1));
+        if (   numeroSommet + 1 < this.nombreSommets
+            && !sommets.get(numeroSommet + 1).estParcouru()) {
+            voisinsNonParcourus.add(sommets.get(numeroSommet + 1));
         }
+
 
         // Retourner la liste des voisins non parcourus
         return voisinsNonParcourus;
@@ -121,18 +139,18 @@ public class Labyrinthe {
     /** TODO comment method role
      * @return 0
      */
-    public List<Arete> getMurs() {
-        return this.murs;
+    public List<Arete> getAretes() {
+        return this.aretes;
     }
-    
+
     /**
      * TODO comment method role
      * @return 0
      */
-    public List<Sommet> getPieces() {
-        return this.pieces;
+    public List<Sommet> getSommets() {
+        return this.sommets;
     }
-    
+
     /**
      * TODO comment method role
      * @param nombrePiece
@@ -140,5 +158,14 @@ public class Labyrinthe {
      */
     private static boolean estValide(int nombrePieces) {
         return nombrePieces > 1;
+    }
+    
+    /**
+     * TODO comment method role
+     * @param args
+     */
+    public static void main(String args[]) {
+        Labyrinthe lab = new Labyrinthe(10);
+        lab.constructionBacktracking();
     }
 }

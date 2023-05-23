@@ -33,7 +33,7 @@ class TestLabyrinthe {
     @BeforeEach
     void setUp() throws Exception {
         // Créer un labyrinthe avec 10 pièces
-        correctes = new ArrayList<Labyrinthe>(15);
+        correctes = new ArrayList<Labyrinthe>();
         correctes.add(new Labyrinthe(10));
     }
 
@@ -46,17 +46,19 @@ class TestLabyrinthe {
     void testConstructionBacktracking() {
         // Construire le labyrinthe en utilisant l'algorithme de backtracking
         correctes.get(0).constructionBacktracking(); 
-        
-        List<Arete> aretes = correctes.get(0).getMurs();
-  
-        // Vérifier que la liste des arêtes n'est pas vide
-        assertFalse(aretes.isEmpty()); 
 
-        List<Sommet> pieces = correctes.get(0).getPieces();
+        List<Arete> aretes = correctes.get(0).getAretes();
+
+        // Vérifier que la liste des arêtes n'est pas vide
+        System.out.println(aretes.size());
+        assertFalse(aretes.isEmpty()); 
         
-        for (Sommet sommet : pieces) {
+        List<Sommet> pieces = correctes.get(0).getSommets();
+
+        for (int i = 0; i < pieces.size(); i++) {
+            System.out.println(i);
             // Vérifier que tous les sommets ont été parcourus
-            assertTrue(sommet.estParcouru()); 
+            assertTrue(pieces.get(i).estParcouru()); 
         }
     }
 

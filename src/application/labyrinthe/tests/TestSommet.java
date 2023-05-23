@@ -30,7 +30,7 @@ class TestSommet {
      */
     @BeforeEach
     void setUp() throws Exception {
-        correctes = new ArrayList<Sommet>(15);
+        correctes = new ArrayList<Sommet>();
         correctes.add(new Sommet(1));
         correctes.add(new Sommet(2));
         correctes.add(new Sommet(3));
