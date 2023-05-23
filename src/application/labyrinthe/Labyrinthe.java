@@ -7,6 +7,7 @@ package application.labyrinthe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import application.pile.File;
 
 /** 
@@ -38,12 +39,13 @@ public class Labyrinthe {
         }
 
         this.nombrePieces = nombrePieces;
-        this.murs = new ArrayList<Arete>();
+        this.murs   = new ArrayList<Arete>();
+        this.pieces = new ArrayList<Sommet>();
 
         // Création des pièces (sommets) du labyrinthe (graphe)
-        for (int i = 0; i < nombrePieces; i++) {
+        for (int i = 1; i <= nombrePieces; i++) {
             Sommet sommet = new Sommet(i);
-            pieces.add(sommet);
+            this.pieces.add(sommet);
         }
     }
 
@@ -53,11 +55,11 @@ public class Labyrinthe {
      */
     public void constructionBacktracking() {
         // Choisir aléatoirement un sommet initial
-        Random randomSommet = new Random();
+        Random randomSommet  = new Random();
         Sommet sommetInitial = pieces.get(randomSommet.nextInt(pieces.size()));
         sommetInitial.marquerParcouru();
         file.empiler(sommetInitial);
-
+        
         // Parcours en backtrack jusqu'à ce que tous les sommets soient parcourus
         while (!file.estVide()) {
             Sommet sommetCourant = file.getSommet();

@@ -15,16 +15,17 @@ import org.junit.jupiter.api.Test;
 
 import application.labyrinthe.Sommet;
 
-/** TODO comment class responsibility (SRP)
+/** 
+ * TODO comment class responsibility (SRP)
  * @author thomas.lemaire
- *
  */
 class TestSommet {
     
     /** */
     private List<Sommet> correctes;
 
-    /** TODO comment method role
+    /** 
+     * TODO comment method role
      * @throws java.lang.Exception
      */
     @BeforeEach

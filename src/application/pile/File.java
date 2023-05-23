@@ -20,7 +20,8 @@ public class File {
     /** Liste des éléments de la pile LIFO */
     private List<Object> pile;
     
-    /** TODO comment initial state
+    /** 
+     * TODO comment initial state
      * 
      */
     public File() {
@@ -55,11 +56,11 @@ public class File {
      * TODO comment method role
      * @return 0
      */
-    public Sommet getSommet() {
+    public Object getSommet() {
         if (this.estVide()) {
             throw new IllegalArgumentException();
         }
-        return new Sommet(pile.size() - 1);
+        return pile.get(pile.size() - 1);
     }
 
 }

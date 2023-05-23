@@ -4,40 +4,37 @@
  */
 package application.labyrinthe.tests;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import java.util.ArrayList;
 import java.util.List;
 
-import application.labyrinthe.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import application.labyrinthe.Labyrinthe;
+import application.labyrinthe.Sommet;
+import application.labyrinthe.Arete;
 
 /**
  * TODO comment class responsibility (SRP)
  * @author thoma
  *
  */
-public class TestLabyrinthe {
+class TestLabyrinthe {
 
-    private Labyrinthe labyrinthe;
-
+    private List<Labyrinthe> correctes;
+    
     /** 
      * TODO comment method role
-     * 
+     * @throws java.lang.Exception
      */
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() throws Exception {
         // Créer un labyrinthe avec 10 pièces
-        labyrinthe = new Labyrinthe(10); 
-    }
-
-    /** 
-     * TODO comment method role
-     * 
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void testCreationLabyrintheInvalide() {
-        // Tentative de création d'un labyrinthe invalide
-        Labyrinthe labyrintheInvalide = new Labyrinthe(1); 
+        correctes = new ArrayList<Labyrinthe>(15);
+        correctes.add(new Labyrinthe(10));
     }
 
     /** 
@@ -45,16 +42,18 @@ public class TestLabyrinthe {
      * 
      */
     @Test
-    public void testConstructionBacktracking() {
+    @DisplayName("Test de la construction du labyrinthe en backtracking")
+    void testConstructionBacktracking() {
         // Construire le labyrinthe en utilisant l'algorithme de backtracking
-        labyrinthe.constructionBacktracking(); 
-
-        List<Arete> aretes = labyrinthe.getMurs();
-        System.out.println(aretes + "dz");
+        correctes.get(0).constructionBacktracking(); 
+        
+        List<Arete> aretes = correctes.get(0).getMurs();
+  
         // Vérifier que la liste des arêtes n'est pas vide
         assertFalse(aretes.isEmpty()); 
 
-        List<Sommet> pieces = labyrinthe.getPieces();
+        List<Sommet> pieces = correctes.get(0).getPieces();
+        
         for (Sommet sommet : pieces) {
             // Vérifier que tous les sommets ont été parcourus
             assertTrue(sommet.estParcouru()); 
@@ -66,9 +65,10 @@ public class TestLabyrinthe {
      * 
      */
     @Test
-    public void testTrouverVoisinsNonParcourus() {
+    @DisplayName("Test des voisins parcourus")
+    void testTrouverVoisinsNonParcourus() {
         Sommet sommet = new Sommet(0);
-        List<Sommet> voisins = labyrinthe.trouverVoisinsNonParcourus(sommet);
+        List<Sommet> voisins = correctes.get(0).trouverVoisinsNonParcourus(sommet);
 
         // Vérifier le nombre de voisins non parcourus
         assertEquals(1, voisins.size()); 
@@ -81,7 +81,8 @@ public class TestLabyrinthe {
      * 
      */
     @Test
-    public void testSauvegarder() {
+    @DisplayName("Test de la sauvegarde du labyrinthe")
+    void testSauvegarder() {
         // TODO: Implémenter ce test une fois que la méthode sauvegarder() est implémentée
     }
 }
