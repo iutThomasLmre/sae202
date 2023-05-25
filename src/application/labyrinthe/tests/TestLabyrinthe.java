@@ -5,7 +5,6 @@
 package application.labyrinthe.tests;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +19,7 @@ import application.labyrinthe.Arete;
 
 /**
  * TODO comment class responsibility (SRP)
- * @author thoma
+ * @author thomas.lemaire
  *
  */
 class TestLabyrinthe {
@@ -36,51 +35,73 @@ class TestLabyrinthe {
         // Créer un labyrinthe avec 35 pièces
         correctes = new ArrayList<Labyrinthe>();
         correctes.add(new Labyrinthe(35));
+        correctes.add(new Labyrinthe(2));
+        correctes.add(new Labyrinthe(24));
+        correctes.add(new Labyrinthe(4));
+    }
+    
+    @Test
+    @DisplayName("Test labyrinthe")
+    void testLabyrinthe() {
+        // TODO
     }
 
-    /** 
-     * TODO comment method role
-     * 
-     */
+    /** TODO comment method role */
     @Test
     @DisplayName("Test de la construction du labyrinthe en backtracking")
     void testConstructionBacktracking() {
-        // Construire le labyrinthe en utilisant l'algorithme de backtracking
-        correctes.get(0).constructionBacktracking(); 
-
-        List<Arete> aretes = correctes.get(0).getAretes();
-
-        // Vérifier que la liste des arêtes n'est pas vide
-        assertFalse(aretes.isEmpty()); 
-                        
-        List<Sommet> pieces = correctes.get(0).getSommets();
-        
-        for (int i = 0; i < pieces.size(); i++) {
+        for (int i = 0; i < correctes.size(); i++) {
+            // Construire le labyrinthe en utilisant l'algorithme de backtracking
+            correctes.get(i).constructionBacktracking(); 
+            
+            // Vérifier que la liste des arêtes n'est pas vide
+            List<Arete> aretes = correctes.get(i).getAretes();
+            assertFalse(aretes.isEmpty()); 
+            
             // Vérifier que tous les sommets ont été parcourus
-            assertTrue(pieces.get(i).estParcouru()); 
+            List<Sommet> pieces = correctes.get(i).getSommets();
+            for (int j = 0; j < pieces.size(); j++) {
+                assertTrue(pieces.get(j).estParcouru()); 
+            }
+            
+           // Affichage des pairs de sommets qui forment les aretes s
+            System.out.println("Pour le labyrinthe : " + i);
+            for (int j = 0; j < aretes.size(); j++) {
+                System.out.println(aretes.get(j));
+            }
         }
     }
 
-    /** 
-     * TODO comment method role
-     * 
-     */
+    /** Test de la méthode trouverVoisinsNonParcouruss */
     @Test
-    @DisplayName("Test des voisins parcourus")
+    @DisplayName("Test des voisins non parcourus")
     void testTrouverVoisinsNonParcourus() {
-        Sommet sommet = new Sommet(0);
-        List<Sommet> voisins = correctes.get(0).trouverVoisinsNonParcourus(sommet);
+        // Sommets testés pour regarder leur nombre de voisin
+        int[] SOMMET_VOISIN_OK = { 0, 3, 12, 20, 24, 34};
+        // Nombre de sommet voisin par rapport au sommet courant
+        int[] NOMBRE_VOISIN_OK = { 2, 3,  4,  3,  4,  2};
 
-        // Vérifier le nombre de voisins non parcourus
-        assertEquals(2, voisins.size()); 
-        // Vérifier que le voisin n'est pas parcouru
-        assertFalse(voisins.get(0).estParcouru()); 
+        for (int i = 0; i < NOMBRE_VOISIN_OK.length; i++) {
+            Sommet sommet = new Sommet(SOMMET_VOISIN_OK[i]);
+            List<Sommet> voisins 
+                         = correctes.get(0).trouverVoisinsNonParcourus(sommet);
+            
+            // Vérifier le nombre de voisins non parcourus
+            assertEquals(NOMBRE_VOISIN_OK[i], voisins.size()); 
+            // Vérifier que les voisins ne sont pas parcourus
+            for (int j = 0; j < voisins.size(); j++) {
+                assertFalse(voisins.get(j).estParcouru());
+            }            
+        } 
     }
 
-    /** 
-     * TODO comment method role
-     * 
-     */
+    @Test
+    public void testTaille() {
+        int[] taille = correctes.get(0).taille(35);      
+        int[] taille1 = correctes.get(0).taille(4);
+    }
+    
+    /** TODO comment method role */
     @Test
     @DisplayName("Test de la sauvegarde du labyrinthe")
     void testSauvegarder() {

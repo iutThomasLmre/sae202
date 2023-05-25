@@ -36,4 +36,10 @@ public class Arete {
     public Sommet getSommetB() {
         return sommetB;
     }
+    
+    /**
+     */
+    public String toString() {
+        return "(" + sommetA + ", " + sommetB + ")";
+    }
 }
