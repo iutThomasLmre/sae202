@@ -7,6 +7,10 @@ package application.labyrinthe;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFrame;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
 import application.pile.File;
 
 /** 
@@ -23,29 +27,30 @@ public class Labyrinthe {
 
     /** Liste des portes (arêtes) qui va former le lybinrinthe */
     private List<Arete> aretes;
-    
+
     private int longueur;
+
     private int hauteur;
 
     /**
      * TODO comment initial state
-     * @param nombrePieces > 1
+     * @param longueur 
+     * @param hauteur 
      */
-    public Labyrinthe(int nombrePieces) {
-        if (!isValide(nombrePieces)) {
+    public Labyrinthe(int longueur, int hauteur) {
+        if (!isValide(longueur * hauteur)) {
             throw new IllegalArgumentException();
         }
 
-        this.nombreSommets = nombrePieces;
+        this.nombreSommets = longueur * hauteur;
         this.aretes  = new ArrayList<Arete>();
         this.sommets = new ArrayList<Sommet>();
-        
-        int[] taille = taille(nombrePieces);
-        this.longueur = taille[1];
-        this.hauteur  = taille[0];
-        
+
+        this.longueur = longueur;
+        this.hauteur  = hauteur;
+
         // Création des pièces (sommets) du labyrinthe (graphe)
-        for (int i = 0; i < nombrePieces; i++) {
+        for (int i = 0; i < this.nombreSommets; i++) {
             Sommet sommet = new Sommet(i);
             this.sommets.add(sommet);
         }
@@ -71,14 +76,14 @@ public class Labyrinthe {
         file = new File();
         // Empiler le sommet courant (initial) à traiter
         file.empiler(sommetInitial);
-        
+
 
         // Parcours en backtrack jusqu'à ce que tous les sommets soient parcourus
         while (!file.estVide()) {
             Sommet sommetCourant = (Sommet) file.getSommet();
             List<Sommet> voisinsNonParcourus 
-                         = trouverVoisinsNonParcourus(sommetCourant);
-            
+            = trouverVoisinsNonParcourus(sommetCourant);
+
             if (voisinsNonParcourus.isEmpty()) {
                 // Dépiler le sommet courant
                 file.depiler();
@@ -114,30 +119,30 @@ public class Labyrinthe {
 
         // Vérification du voisin du haut
         if (   numeroSommet - longueur >= 0
-            && !sommets.get(numeroSommet - longueur).estParcouru()) {
+                && !sommets.get(numeroSommet - longueur).estParcouru()) {
             voisinsNonParcourus.add(sommets.get(numeroSommet - longueur));
         }
 
         // Vérification du voisin du bas
         if (   numeroSommet + longueur < this.nombreSommets
-            && !sommets.get(numeroSommet + longueur).estParcouru()) {
+                && !sommets.get(numeroSommet + longueur).estParcouru()) {
             voisinsNonParcourus.add(sommets.get(numeroSommet + longueur));
         }
-        
+
 
         // Vérification du voisin de gauche
         if (   numeroSommet % longueur - 1 >= 0
-            && !sommets.get(numeroSommet - 1).estParcouru()) {
+                && !sommets.get(numeroSommet - 1).estParcouru()) {
             voisinsNonParcourus.add(sommets.get(numeroSommet - 1));
         }
 
 
         // Vérification du voisin de droite
         if (   numeroSommet % longueur + 1 < longueur
-            && !sommets.get(numeroSommet + 1).estParcouru()) {
+                && !sommets.get(numeroSommet + 1).estParcouru()) {
             voisinsNonParcourus.add(sommets.get(numeroSommet + 1));
         }
-        
+
         // Retourner la liste des voisins non parcourus
         return voisinsNonParcourus;
     }
@@ -173,35 +178,164 @@ public class Labyrinthe {
     private boolean isValide(int nombrePieces) {
         return nombrePieces > 1;
     }
-    
+
     /**
      * TODO comment method role
-     * @param nombrePieces
-     * @return 1
+     * @param positionJoueur 
      */
-    public int[] taille(int nombrePieces) {
-        int[] plusGrandFacteurs = {0, 0};
-        List<Integer> denominateurs;
-        
-        double racineCarreNbPieces = (int) Math.sqrt(nombrePieces);      
+    public void afficher(int positionJoueur) {
+        int numeroSommet = 0;
 
-        denominateurs = new ArrayList<Integer>();   
-        denominateurs.add(1);
-        
-        for (int i = 2; i <= nombrePieces; i++) {
-            if (nombrePieces % i == 0) {
-                denominateurs.add(i);
+        for (int j = 0; j < hauteur; j++) {
+            if (j == 0) {
+                for (int i = 0; i < longueur; i++) {
+                    if (i == 0) {
+                        System.out.print("┌─▬▬");
+                    } else {
+                        System.out.print("┬─▬▬");
+                    }
+                }
+                System.out.print("┐\n");
             }
+            int numeroSommetTemporaire = numeroSommet;
+            for (int i = 0; i < longueur + 1; i++) {
+                if (i == 0) {
+                    if (positionJoueur == numeroSommetTemporaire) {
+                        System.out.print("│ O ");
+                    } else {
+                        System.out.print("│   ");
+                    }
+                } else {
+                    boolean porte = false;
+                    for (int k = 0; k < getAretes().size(); k++) {
+                        Arete areteCourante = getAretes().get(k);
+                        porte =    (areteCourante.getSommetA().getNumero() 
+                                == numeroSommetTemporaire
+                                &&  areteCourante.getSommetB().getNumero()
+                                == numeroSommetTemporaire + 1)
+                                || (areteCourante.getSommetA().getNumero()
+                                        == numeroSommetTemporaire + 1
+                                        &&  areteCourante.getSommetB().getNumero()
+                                        == numeroSommetTemporaire)
+                                ||  porte;
+                    }
+                    if (!porte) {
+                        if (i == longueur - 1 && j == hauteur - 1) {
+                            System.out.print("│ X ");
+                        } else if (   positionJoueur == numeroSommetTemporaire+1
+                                && positionJoueur%longueur != 0) {
+                            System.out.print("│ O ");
+                        } else {
+                            System.out.print("│   ");
+                        }
+                    } else {
+                        if (i == longueur - 1 && j == hauteur - 1) {
+                            System.out.print("  X ");
+                        } else if (   positionJoueur == numeroSommetTemporaire+1
+                                && positionJoueur%longueur != 0) {
+                            System.out.print("  O ");
+                        } else {
+                            System.out.print("    ");
+                        }
+                    }
+
+                    numeroSommetTemporaire++;
+                }
+
+            }
+            System.out.print("\n");
+            for (int i = 0; i < longueur; i++) {
+                boolean porte = false;
+                for (int k = 0; k < getAretes().size(); k++) {
+                    Arete areteCourante = getAretes().get(k);
+                    porte =    (areteCourante.getSommetA().getNumero() 
+                            == numeroSommet
+                            &&  areteCourante.getSommetB().getNumero() 
+                            == numeroSommet + longueur)
+                            || (areteCourante.getSommetA().getNumero() 
+                                    == numeroSommet + longueur
+                                    &&  areteCourante.getSommetB().getNumero()
+                                    == numeroSommet)
+                            ||  porte;
+                }
+                if (!porte) {
+                    if (i == 0 && j < hauteur-1) {
+                        System.out.print("├─▬▬");
+                    } else if (i > 0 && j == hauteur-1) {
+                        System.out.print("┴─▬▬");
+                    } else if (i == 0) {
+                        System.out.print("└─▬▬");
+                    } else {
+                        System.out.print("┼─▬▬");
+                    }
+
+                } else {
+                    if (i == 0 && j < longueur-1) {
+                        System.out.print("├   ");
+                    }
+                    else {
+                        System.out.print("┼   ");
+                    }
+                }
+
+                numeroSommet++;
+            }
+            if (j == hauteur-1) {
+                System.out.print("┘\n");
+            } else {
+                System.out.print("┤\n");
+            }          
         }
+    }
+
+    /** @return valeur de hauteur */
+    public int getHauteur() {
+        return hauteur;
+    }
+
+    /** @return valeur de longueur */
+    public int getLongueur() {
+        return longueur;
+    }
+
+    /**
+     * TODO comment method role
+     * @param args
+     */
+    public static void main(String args[]) {
+        final Labyrinthe lab = new Labyrinthe(14, 10);
+        lab.constructionBacktracking();
         
-        int index = 0;
-        while ( racineCarreNbPieces > denominateurs.get(index)) {
-            index++;
-        }
-        
-        plusGrandFacteurs[0] = denominateurs.get(index);
-        plusGrandFacteurs[1] = nombrePieces / denominateurs.get(index);
-        
-       return plusGrandFacteurs; 
+        JFrame myJFrame = new JFrame();
+
+        myJFrame.addKeyListener(new KeyAdapter() {
+            int positionJoueur = 0;
+            public void keyPressed(KeyEvent e) {
+                
+                
+                lab.afficher(positionJoueur);  // init
+                
+                int keyCode = e.getKeyCode();
+                if (keyCode == KeyEvent.VK_UP) {
+                    positionJoueur -= lab.getLongueur();
+                    lab.afficher(positionJoueur);
+                }
+                else if (keyCode == KeyEvent.VK_DOWN) {
+                    positionJoueur += lab.getLongueur();
+                    lab.afficher(positionJoueur);
+                }
+                else if (keyCode == KeyEvent.VK_LEFT) {
+                    positionJoueur--;
+                    lab.afficher(positionJoueur);
+                }
+                else if (keyCode == KeyEvent.VK_RIGHT) {
+                    positionJoueur++;
+                    lab.afficher(positionJoueur);
+                }
+            }
+        });
+
+        myJFrame.setVisible(true);
     }
 }
+

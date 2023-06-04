@@ -34,16 +34,10 @@ class TestLabyrinthe {
     void setUp() throws Exception {
         // Créer un labyrinthe avec 35 pièces
         correctes = new ArrayList<Labyrinthe>();
-        correctes.add(new Labyrinthe(35));
-        correctes.add(new Labyrinthe(2));
-        correctes.add(new Labyrinthe(24));
-        correctes.add(new Labyrinthe(4));
-    }
-    
-    @Test
-    @DisplayName("Test labyrinthe")
-    void testLabyrinthe() {
-        // TODO
+        correctes.add(new Labyrinthe(7, 5));
+        correctes.add(new Labyrinthe(2, 1));
+        correctes.add(new Labyrinthe(4, 6));
+        correctes.add(new Labyrinthe(2, 2));
     }
 
     /** TODO comment method role */
@@ -71,7 +65,7 @@ class TestLabyrinthe {
             }
         }
     }
-
+    
     /** Test de la méthode trouverVoisinsNonParcouruss */
     @Test
     @DisplayName("Test des voisins non parcourus")
@@ -93,18 +87,5 @@ class TestLabyrinthe {
                 assertFalse(voisins.get(j).estParcouru());
             }            
         } 
-    }
-
-    @Test
-    public void testTaille() {
-        int[] taille = correctes.get(0).taille(35);      
-        int[] taille1 = correctes.get(0).taille(4);
-    }
-    
-    /** TODO comment method role */
-    @Test
-    @DisplayName("Test de la sauvegarde du labyrinthe")
-    void testSauvegarder() {
-        // TODO: Implémenter ce test une fois que la méthode sauvegarder() est implémentée
     }
 }
