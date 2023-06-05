@@ -21,7 +21,7 @@ public class File {
     private List<Object> pile;
     
     /** 
-     * TODO comment initial state
+     * Création d'une Pile en faisant une list
      * 
      */
     public File() {
@@ -29,7 +29,7 @@ public class File {
     }
     
     /**
-     * TODO comment method role
+     * Cette méthode permet d'empiler un Objet dans notre pile
      * @param objet
      */
     public void empiler(Object objet) {
@@ -37,7 +37,7 @@ public class File {
     }
     
     /**
-     * TODO comment method role
+     * Cette méthode depile le dernier élément de notre pile
      *
      */
     public void depiler() {
@@ -45,7 +45,8 @@ public class File {
     }
     
     /**
-     * TODO comment method role
+     * Permet de vérifier si notre pile est vide ou non.
+     * ELle renvoie True si la pile est vide et False si elle ne l'est pas
      * @return 0
      */
     public boolean estVide() {
@@ -53,7 +54,8 @@ public class File {
     }
     
     /**
-     * TODO comment method role
+     * Permet de récupérer le sommet (dernier élément de notre pile)
+     * et le renvoie
      * @return 0
      */
     public Object getSommet() {

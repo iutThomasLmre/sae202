@@ -33,7 +33,8 @@ public class Labyrinthe {
     private int hauteur;
 
     /**
-     * TODO comment initial state
+     * Contructeur de la classe Labyrinthe, il permet de créer un Labyrinthe
+     * avec la taille de notre choix
      * @param longueur 
      * @param hauteur 
      */
@@ -57,7 +58,8 @@ public class Labyrinthe {
     }
 
     /**
-     * TODO comment method role
+     * Création d'une pile qui va contenir nos sommet
+     * Et qui va créer une Arete entre ces sommmets  
      *
      */
     public void constructionBacktracking() {
@@ -108,8 +110,8 @@ public class Labyrinthe {
     }
 
     /**
-     * TODO comment method role
-     * @param sommet
+     * Permet de trouver les sommets non parcourus autours d'un sommet
+     * @param sommet dont l'on cherche les voisins non parcourus
      * @return 0
      */
     public List<Sommet> trouverVoisinsNonParcourus(Sommet sommet) {
@@ -148,30 +150,30 @@ public class Labyrinthe {
     }
 
     /**
-     * TODO comment method role
+     * Permet de sauvegarder le Labyrinthe avec ses sommets et ses Aretes
      *
      */
     public void sauvegarder() {
         // TODO Faire le script de sauvegarde
     }
 
-    /** TODO comment method role
-     * @return 0
+    /** Renvoie la liste des Aretes
+     * @return la liste des aretes
      */
     public List<Arete> getAretes() {
         return this.aretes;
     }
 
     /**
-     * TODO comment method role
-     * @return 0
+     * Renvoie le sommet 
+     * @return la liste de sommet
      */
     public List<Sommet> getSommets() {
         return this.sommets;
     }
 
     /**
-     * TODO comment method role
+     * Permet de vérifier la validité du Labyrinthe
      * @param nombrePiece
      * @return
      */
@@ -180,7 +182,7 @@ public class Labyrinthe {
     }
 
     /**
-     * TODO comment method role
+     * Affichage du Labyrinthe
      * @param positionJoueur 
      */
     public void afficher(int positionJoueur) {

@@ -27,7 +27,8 @@ class TestLabyrinthe {
     private List<Labyrinthe> correctes;
     
     /** 
-     * TODO comment method role
+     * Crée une List correctes de données correctes qui vont permettre
+     * de tester le code
      * @throws java.lang.Exception
      */
     @BeforeEach
@@ -40,7 +41,7 @@ class TestLabyrinthe {
         correctes.add(new Labyrinthe(2, 2));
     }
 
-    /** TODO comment method role */
+    /** Test de la méthode constructionBacktracking*/
     @Test
     @DisplayName("Test de la construction du labyrinthe en backtracking")
     void testConstructionBacktracking() {

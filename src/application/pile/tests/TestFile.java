@@ -26,7 +26,7 @@ class TestFile {
     private List<File> correctes;
 
     /** 
-     * TODO comment method role
+     * Crée une List de données coorectes pour effectuer les tests
      * @throws java.lang.Exception
      */
     @BeforeEach
