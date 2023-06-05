@@ -39,7 +39,7 @@ public class AscendanteChaine {
     private static int hauteur;
     
     /** Le nombre de pièces (sommets) que le labyrinthe (graphe) va comporter */
-    private int nombreSommets;
+    private static int nombreSommets;
 
     
     /** Initialisation de deux objet Sommet */
@@ -59,7 +59,9 @@ public class AscendanteChaine {
         this.longueur = longueur;
         this.hauteur = hauteur;
         
-        ensembleSommet = new Sommet[longueur * hauteur];
+        this.listeArete  = new ArrayList<Arete>();      
+        
+        ensembleSommet = new Sommet[nombreSommets];
 
         // Création des pièces (sommets) du labyrinthe (graphe)
         for (int i = 0; i < ensembleSommet.length; i++) {
@@ -75,10 +77,9 @@ public class AscendanteChaine {
      */
     public static void créationListeMarque() {
 
+        marque = new ArrayList<>(nombreSommets);
 
-        marque = new ArrayList<>(hauteur * longueur);
-
-        for (int i = 0; i < marque.size(); i++) {
+        for (int i = 0; i < nombreSommets - 1; i++) {
             marque.add("" + i);
         }
 
@@ -142,15 +143,14 @@ public class AscendanteChaine {
         
         listeArete  = new ArrayList<Arete>();
         
-        final AscendanteChaine lab = new AscendanteChaine(10, 10);
 
-        
         while (listeArete.size() < ensembleSommet.length - 1) {
 
             sommetA = ensembleSommet[(int) (Math.random() * 100)];
             sommetB = ensembleSommet[(int) (Math.random() * 100)];
-
-            marquage(sommetA, sommetB);     
+            
+            marquage(sommetA, sommetB);   
+            
 
         }
 
@@ -163,6 +163,15 @@ public class AscendanteChaine {
         return listeArete;
     }
 
+    /** @return valeur de hauteur */
+    public static int getHauteur() {
+        return hauteur;
+    }
+
+    /** @return valeur de longueur */
+    public static int getLongueur() {
+        return longueur;
+    }
   
     /**
      * Affichage du Labyrinthe
@@ -281,10 +290,11 @@ public class AscendanteChaine {
      */
     public static void main(String[] args) {
         
-        
+        final AscendanteChaine lab = new AscendanteChaine(10, 10);
         
 
         créationListeMarque();
+
         
         créationArete();
         
