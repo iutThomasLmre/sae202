@@ -146,16 +146,45 @@ public class AscendanteChaine {
 
         while (listeArete.size() < ensembleSommet.length - 1) {
 
-            sommetA = ensembleSommet[(int) (Math.random() * 100)];
-            sommetB = ensembleSommet[(int) (Math.random() * 100)];
+            sommetA = ensembleSommet[(int) (Math.random() * nombreSommets)];
+            sommetB = ensembleSommet[(int) (Math.random() * nombreSommets)];
             
-            marquage(sommetA, sommetB);   
-            
+            if (isVoisin(sommetA, sommetB)) {
+                marquage(sommetA, sommetB);
+            }
 
         }
 
     }
     
+    
+    /** TODO comment method role
+     * @param sommetA2
+     * @param sommetB2
+     * @return 
+     */
+    private static boolean isVoisin(Sommet sommetA, Sommet sommetB) {
+        
+       int numeroSommetA = sommetA.getNumero();
+       int numeroSommetB = sommetB.getNumero();
+       if (numeroSommetA - longueur >= 0 && numeroSommetB == numeroSommetA -longueur) {
+           return true;
+       } else if (numeroSommetA + longueur < numeroSommetB && numeroSommetB == numeroSommetA + longueur) {
+           return true;
+       } else if (numeroSommetA % longueur - 1 >= 0 && numeroSommetB == numeroSommetA - 1) {
+           
+       } else if (numeroSommetA % longueur + 1 < longueur && numeroSommetB == numeroSommetA + 1) {
+           return true;
+       }
+       return false;
+       
+       
+       
+    
+    }
+
+
+
     /** Renvoie la liste des Aretes
      * @return la liste des aretes
      */
@@ -169,7 +198,7 @@ public class AscendanteChaine {
     }
 
     /** @return valeur de longueur */
-    public static int getLongueur() {
+    public int getLongueur() {
         return longueur;
     }
   
@@ -193,6 +222,7 @@ public class AscendanteChaine {
             }
             int numeroSommetTemporaire = numeroSommet;
             for (int i = 0; i < longueur + 1; i++) {
+                
                 if (i == 0) {
                     if (positionJoueur == numeroSommetTemporaire) {
                         System.out.print("│ O ");
@@ -281,6 +311,45 @@ public class AscendanteChaine {
             }          
         }
     }
+    
+    /** TODO comment method role
+     * @param lab 
+     * 
+     */
+    public static void deplacement(AscendanteChaine lab) {
+        
+        JFrame myJFrame = new JFrame();
+
+        myJFrame.addKeyListener(new KeyAdapter() {
+            int positionJoueur = 0;
+            public void keyPressed(KeyEvent e) {
+                
+                
+                AscendanteChaine.afficher(positionJoueur);  // init
+                
+                int keyCode = e.getKeyCode();
+                if (keyCode == KeyEvent.VK_UP) {
+                    positionJoueur -= lab.getLongueur();
+                    AscendanteChaine.afficher(positionJoueur);
+                }
+                else if (keyCode == KeyEvent.VK_DOWN) {
+                    positionJoueur += lab.getLongueur();
+                    AscendanteChaine.afficher(positionJoueur);
+                }
+                else if (keyCode == KeyEvent.VK_LEFT) {
+                    positionJoueur--;
+                    AscendanteChaine.afficher(positionJoueur);
+                }
+                else if (keyCode == KeyEvent.VK_RIGHT) {
+                    positionJoueur++;
+                    AscendanteChaine.afficher(positionJoueur);
+                }
+            }
+        });
+        
+        myJFrame.setVisible(true);
+        
+    }
 
     
     
@@ -294,11 +363,10 @@ public class AscendanteChaine {
         
 
         créationListeMarque();
-
-        
+     
         créationArete();
         
-        afficher(0);
+        deplacement(lab);
 
         
     }

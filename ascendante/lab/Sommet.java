@@ -65,6 +65,7 @@ public class Sommet implements Comparable <Sommet>{
     public void marquage(String marque) {
         this.marque = marque;
     }
+    
 
     
     /* non javadoc - @see java.lang.Comparable#compareTo(java.lang.Object) */
