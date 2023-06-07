@@ -62,5 +62,13 @@ public class File {
         }
         return pile.get(pile.size() - 1);
     }
+    
+    /**
+     * TODO comment method role
+     * @return 0
+     */
+    public int getTaille() {
+        return pile.size();
+    }
 
 }

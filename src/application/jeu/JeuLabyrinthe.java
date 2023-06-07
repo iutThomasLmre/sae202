@@ -332,7 +332,7 @@ public class JeuLabyrinthe {
                                                      dimensionsLabyrinthe[1],
                                                      difficulteLabyrinthe);
 
-        labyrinthe.constructionBacktracking();
+        labyrinthe.constructionParcours();
         
         nettoyerConsole(50);
         labyrinthe.afficher();
@@ -367,6 +367,11 @@ public class JeuLabyrinthe {
                         menuActif = 0;
                         optionMenuCible = 1;
                         afficherMenu();
+                        break;
+                    case KeyEvent.VK_S:
+                        joueurEnjeu = false;
+                        nettoyerConsole(50);
+                        labyrinthe.terminer();
                         break;
                     case KeyEvent.VK_ESCAPE:
                         application.setVisible(false);

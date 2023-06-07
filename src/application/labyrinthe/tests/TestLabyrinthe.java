@@ -46,7 +46,7 @@ class TestLabyrinthe {
     void testConstructionBacktracking() {
         for (int i = 0; i < correctes.size(); i++) {
             // Construire le labyrinthe en utilisant l'algorithme de backtracking
-            correctes.get(i).constructionBacktracking(); 
+            correctes.get(i).constructionParcours(); 
             
             // Vérifier que la liste des arêtes n'est pas vide
             List<Arete> aretes = correctes.get(i).getAretes();

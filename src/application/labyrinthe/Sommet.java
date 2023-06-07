@@ -28,7 +28,7 @@ public class Sommet {
         this.numero = numero;
         this.parcouru = false;
     }
-    
+
     /**
      * TODO comment method role
      * @return .
@@ -52,12 +52,19 @@ public class Sommet {
     public void marquerParcouru() {
         parcouru = true;
     }
-    
+
+    /**
+     * 
+     */
+    public void demarquerParcouru() {
+        parcouru = false;
+    }
+
     public String toString() {
         Integer tempNumero = this.numero;
         return "p" + tempNumero.toString();
     }
-    
+
     /**
      * TODO comment method role
      * @param numero
