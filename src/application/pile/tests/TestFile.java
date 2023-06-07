@@ -13,8 +13,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import application.pile.File;
 import application.labyrinthe.Sommet;
+import application.pile.File;
 
 /** 
  * TODO comment class responsibility (SRP)

@@ -5,11 +5,8 @@
 package application.labyrinthe;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.JFrame;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 import application.pile.File;
 
@@ -28,16 +25,33 @@ public class Labyrinthe {
     /** Liste des portes (arêtes) qui va former le lybinrinthe */
     private List<Arete> aretes;
 
+    /** 
+     * Matrice de representation des portes (arêtes)
+     *  <ul><li> 0 : un mur est présent
+     * </li><li> 1 : une porte est présente 
+     * </li></ul>
+     */
+    private int[][] representationAretes;
+
+    /** Longueur du labyrinthe */
     private int longueur;
 
+    /** Hauteur du labyrinthe */
     private int hauteur;
+    
+    private int difficulte;
+    
+    private int positionJoueur = 0;
+    private int nombreCoups = 0;
+    private int positionArrivee;
 
     /**
      * TODO comment initial state
      * @param longueur 
      * @param hauteur 
+     * @param difficulte 
      */
-    public Labyrinthe(int longueur, int hauteur) {
+    public Labyrinthe(int longueur, int hauteur, int difficulte) {
         if (!isValide(longueur * hauteur)) {
             throw new IllegalArgumentException();
         }
@@ -48,6 +62,9 @@ public class Labyrinthe {
 
         this.longueur = longueur;
         this.hauteur  = hauteur;
+        this.difficulte = difficulte;
+        
+        this.positionArrivee = nombreSommets-1;
 
         // Création des pièces (sommets) du labyrinthe (graphe)
         for (int i = 0; i < this.nombreSommets; i++) {
@@ -63,15 +80,15 @@ public class Labyrinthe {
     public void constructionBacktracking() {
 
         File file;
-        int randomSommet;
-        int randomVoisin;
+        int sommetAleatoire;
+        int voisinAleatoire;
         Sommet sommetInitial;
 
         // Choisir aléatoirement un sommet initial
-        randomSommet  = (int)(Math.random() * this.nombreSommets);
-        sommetInitial = sommets.get(randomSommet);
+        sommetAleatoire  = (int)(Math.random() * this.nombreSommets);
+        sommetInitial    = sommets.get(sommetAleatoire);
         sommetInitial.marquerParcouru();
-
+        
         // Créer une pile LIFO initialement vide
         file = new File();
         // Empiler le sommet courant (initial) à traiter
@@ -85,26 +102,35 @@ public class Labyrinthe {
             = trouverVoisinsNonParcourus(sommetCourant);
 
             if (voisinsNonParcourus.isEmpty()) {
+
                 // Dépiler le sommet courant
                 file.depiler();
-                // Le nouveau sommet de pile devient le sommet courant (si pile vide)
+
+                // Le nouveau sommet de pile devient le sommet courant
                 if (!file.estVide()) {
                     sommetCourant = (Sommet) file.getSommet();
                 }
             } else {
                 // Choisir aléatoirement un des voisins non parcouru
-                randomVoisin = (int)(Math.random() * voisinsNonParcourus.size());
-                Sommet voisinChoisi = voisinsNonParcourus.get(randomVoisin);
+                voisinAleatoire 
+                = (int)(Math.random() * voisinsNonParcourus.size());
+                Sommet voisinChoisi = voisinsNonParcourus.get(voisinAleatoire);
+
                 // Créer l'arête sommet courant -- voisin
                 Arete porte = new Arete(sommetCourant, voisinChoisi);
+
                 // casser le mur et créer une porte
                 aretes.add(porte);
+
                 // Parcourir le voisin
                 voisinChoisi.marquerParcouru();
+
                 // Devient le sommet courrant en étant empilé
                 file.empiler(voisinChoisi);
             }
         }
+        
+        this.representationAretes = constructionRepresentation();
     }
 
     /**
@@ -129,13 +155,11 @@ public class Labyrinthe {
             voisinsNonParcourus.add(sommets.get(numeroSommet + longueur));
         }
 
-
         // Vérification du voisin de gauche
         if (   numeroSommet % longueur - 1 >= 0
                 && !sommets.get(numeroSommet - 1).estParcouru()) {
             voisinsNonParcourus.add(sommets.get(numeroSommet - 1));
         }
-
 
         // Vérification du voisin de droite
         if (   numeroSommet % longueur + 1 < longueur
@@ -155,138 +179,207 @@ public class Labyrinthe {
         // TODO Faire le script de sauvegarde
     }
 
-    /** TODO comment method role
-     * @return 0
-     */
+    /** @return La liste des aretes représentant les portes du labyrinthe */
     public List<Arete> getAretes() {
         return this.aretes;
     }
 
-    /**
-     * TODO comment method role
-     * @return 0
-     */
+    /** @return La liste des sommets qui forment les salles du labyrinthe */
     public List<Sommet> getSommets() {
         return this.sommets;
     }
 
     /**
-     * TODO comment method role
-     * @param nombrePiece
-     * @return
+     * @param  nombreSalles , le résultat de la multiplication de la longueur et 
+     *         de la hauteur du labyrinthe
+     * @return true si le nombre de salles du labyrinthe est supérieur ou égal à 4,
+     *         false sinon
      */
-    private boolean isValide(int nombrePieces) {
-        return nombrePieces > 1;
+    private boolean isValide(int nombreSalles) {
+        return nombreSalles >= 4;
     }
 
     /**
      * TODO comment method role
-     * @param positionJoueur 
+     * @return
      */
-    public void afficher(int positionJoueur) {
-        int numeroSommet = 0;
-
-        for (int j = 0; j < hauteur; j++) {
-            if (j == 0) {
-                for (int i = 0; i < longueur; i++) {
-                    if (i == 0) {
-                        System.out.print("┌─▬▬");
-                    } else {
-                        System.out.print("┬─▬▬");
-                    }
-                }
-                System.out.print("┐\n");
+    private int[][] constructionRepresentation() {
+        
+        int[][] aRetourner = new int[nombreSommets][nombreSommets];
+        Arete areteCourante;
+        
+        for (int i = 0; i < aretes.size(); i++) {
+            areteCourante = aretes.get(i);
+            aRetourner[areteCourante.getSommetA().getNumero()]
+                      [areteCourante.getSommetB().getNumero()] = 1;
+        }
+                
+        return aRetourner;
+    }
+    
+    /**
+     * TODO comment method role
+     * @param direction
+     */
+    public void deplacerJoueur(char direction) {
+        
+        switch (direction) {
+        case 'N':
+            if (    positionJoueur - longueur >= 0
+                && (representationAretes[positionJoueur][positionJoueur-longueur] == 1
+                ||  representationAretes[positionJoueur-longueur][positionJoueur] == 1)) {
+                positionJoueur -= longueur;
+                nombreCoups++;
             }
-            int numeroSommetTemporaire = numeroSommet;
-            for (int i = 0; i < longueur + 1; i++) {
-                if (i == 0) {
-                    if (positionJoueur == numeroSommetTemporaire) {
-                        System.out.print("│ O ");
-                    } else {
-                        System.out.print("│   ");
-                    }
-                } else {
-                    boolean porte = false;
-                    for (int k = 0; k < getAretes().size(); k++) {
-                        Arete areteCourante = getAretes().get(k);
-                        porte =    (areteCourante.getSommetA().getNumero() 
-                                == numeroSommetTemporaire
-                                &&  areteCourante.getSommetB().getNumero()
-                                == numeroSommetTemporaire + 1)
-                                || (areteCourante.getSommetA().getNumero()
-                                        == numeroSommetTemporaire + 1
-                                        &&  areteCourante.getSommetB().getNumero()
-                                        == numeroSommetTemporaire)
-                                ||  porte;
-                    }
-                    if (!porte) {
-                        if (i == longueur - 1 && j == hauteur - 1) {
-                            System.out.print("│ X ");
-                        } else if (   positionJoueur == numeroSommetTemporaire+1
-                                && positionJoueur%longueur != 0) {
-                            System.out.print("│ O ");
-                        } else {
-                            System.out.print("│   ");
-                        }
-                    } else {
-                        if (i == longueur - 1 && j == hauteur - 1) {
-                            System.out.print("  X ");
-                        } else if (   positionJoueur == numeroSommetTemporaire+1
-                                && positionJoueur%longueur != 0) {
-                            System.out.print("  O ");
-                        } else {
-                            System.out.print("    ");
-                        }
-                    }
-
-                    numeroSommetTemporaire++;
-                }
-
+            break;
+        case 'E':
+            if (    positionJoueur + 1 < nombreSommets
+                && (representationAretes[positionJoueur][positionJoueur+1] == 1
+                ||  representationAretes[positionJoueur+1][positionJoueur] == 1)) {
+                positionJoueur++;
+                nombreCoups++;
             }
-            System.out.print("\n");
-            for (int i = 0; i < longueur; i++) {
-                boolean porte = false;
-                for (int k = 0; k < getAretes().size(); k++) {
-                    Arete areteCourante = getAretes().get(k);
-                    porte =    (areteCourante.getSommetA().getNumero() 
-                            == numeroSommet
-                            &&  areteCourante.getSommetB().getNumero() 
-                            == numeroSommet + longueur)
-                            || (areteCourante.getSommetA().getNumero() 
-                                    == numeroSommet + longueur
-                                    &&  areteCourante.getSommetB().getNumero()
-                                    == numeroSommet)
-                            ||  porte;
-                }
-                if (!porte) {
-                    if (i == 0 && j < hauteur-1) {
-                        System.out.print("├─▬▬");
-                    } else if (i > 0 && j == hauteur-1) {
-                        System.out.print("┴─▬▬");
-                    } else if (i == 0) {
-                        System.out.print("└─▬▬");
-                    } else {
-                        System.out.print("┼─▬▬");
-                    }
-
-                } else {
-                    if (i == 0 && j < longueur-1) {
-                        System.out.print("├   ");
-                    }
-                    else {
-                        System.out.print("┼   ");
-                    }
-                }
-
-                numeroSommet++;
+            break;
+        case 'S':
+            if (    positionJoueur + longueur < nombreSommets
+                && (representationAretes[positionJoueur][positionJoueur+longueur] == 1
+                ||  representationAretes[positionJoueur+longueur][positionJoueur] == 1)) {
+                positionJoueur += longueur;
+                nombreCoups++;
             }
-            if (j == hauteur-1) {
-                System.out.print("┘\n");
-            } else {
-                System.out.print("┤\n");
-            }          
+            break;
+        case 'W':
+            if (    positionJoueur - 1 >= 0
+                && (representationAretes[positionJoueur][positionJoueur-1] == 1
+                ||  representationAretes[positionJoueur-1][positionJoueur] == 1)) {
+                positionJoueur--;
+                nombreCoups++;
+            }
+            break;
+        default:
+            // Touches non prises en compte
+            break;
+        }
+        
+        if (positionArrivee == positionJoueur) {
+            terminer();
+        } else {
+            afficher();
         }
     }
+    
+    /**
+     * TODO comment method role
+     *
+     */
+    public void terminer() {
+        
+    }
+
+    /**
+     * TODO comment method role 
+     */
+    public void afficher() {
+
+        int k = 0;
+        
+        System.out.println("Pour quitter le jeu appuyez sur [Q]");
+        System.out.printf("Nombre de coups réalisés : %d \n\n", nombreCoups);
+
+        for (int j = 0; j < longueur; j++) {
+            if (   j == 0 && difficulte == 0
+                || (j == 0 && difficulte == 1 && positionJoueur - j == 0)) {
+                System.out.print("┌─▬▬");
+            } else if (   difficulte == 0
+                       || (difficulte == 1 && positionJoueur - j == 0)){
+                System.out.print("┬─▬▬");
+            } else {
+                System.out.print("    ");
+            }
+        }
+        
+        if (    difficulte == 0
+            || (difficulte == 1 && positionJoueur-longueur+1 == 0)) {
+            System.out.print("┐");
+        } else {
+            System.out.print(" ");
+        }
+        
+        System.out.print("\n│");
+        
+        for (int i = 0; i < hauteur; i++) {
+                        
+            // Vérification des voisins de droite
+            for (int j = 0; j < longueur; j++) {
+                
+                String remplirSalle = positionJoueur == j + k ? 
+                                    "o" : positionArrivee == j + k ? "X" : " ";
+                
+                if (   j+k+1 < nombreSommets
+                    && (representationAretes[j+k][j+k+1] == 1
+                    ||  representationAretes[j+k+1][j+k] == 1)
+                    &&  (difficulte == 0
+                    ||   (difficulte == 1 && positionJoueur-j-k == 0)
+                    ||   (difficulte == 1 && positionJoueur-j-k == 1))) {
+                     System.out.printf(" %s  ", remplirSalle);
+                 } else if (   difficulte == 0
+                            || (difficulte == 1 && positionJoueur-j-k == 0)
+                            || (difficulte == 1 && positionJoueur-j-k == 1)) {
+                     System.out.printf(" %s │", remplirSalle);
+                 } else {
+                     System.out.print("    ");
+                 }
+            }
+                                
+            if (i < hauteur-1) {
+                if ( difficulte == 0
+                    || difficulte == 1 && positionJoueur-k ==0) {
+                    System.out.print("\n├");
+                } else {
+                    System.out.print("\n ");
+                }
+                
+                
+             // Vérification des voisins du haut et du bas
+                for (int j = 0; j < longueur; j++) {
+                                       
+                    String separation = j != longueur-1 ? "┼" : "┤";
+                    
+                    if (   j+k+longueur < nombreSommets
+                        && (representationAretes[j+k][j+k+longueur] == 1
+                        ||  representationAretes[j+k+longueur][j+k] == 1
+                        &&  (difficulte == 0
+                        ||  (difficulte == 1 && positionJoueur-j-k == 0)
+                        ||  (difficulte == 1 && positionJoueur-j-k == longueur)))){
+                       System.out.printf("   %s", separation);
+                    } else if (   difficulte == 0
+                               || (difficulte == 1 && positionJoueur-j-k == 0)
+                               || (difficulte == 1 && positionJoueur-j-k == longueur)){
+                       System.out.printf("─▬▬%s", separation);
+                    } else {
+                        System.out.print("    ");
+                    }
+                }  
+                
+                k += longueur;
+                System.out.print("\n│");
+                
+            } else {
+                System.out.println();
+            }   
+        }
+        
+                
+        for (int j = 0; j < longueur; j++) {
+            if (j == 0) {
+                System.out.print("└─▬▬");
+            } else {
+                System.out.print("┴─▬▬");
+            }
+        }
+        System.out.print("┘\n");
+    }
+    
 
     /** @return valeur de hauteur */
     public int getHauteur() {
@@ -296,46 +389,6 @@ public class Labyrinthe {
     /** @return valeur de longueur */
     public int getLongueur() {
         return longueur;
-    }
-
-    /**
-     * TODO comment method role
-     * @param args
-     */
-    public static void main(String args[]) {
-        final Labyrinthe lab = new Labyrinthe(14, 10);
-        lab.constructionBacktracking();
-        
-        JFrame myJFrame = new JFrame();
-
-        myJFrame.addKeyListener(new KeyAdapter() {
-            int positionJoueur = 0;
-            public void keyPressed(KeyEvent e) {
-                
-                
-                lab.afficher(positionJoueur);  // init
-                
-                int keyCode = e.getKeyCode();
-                if (keyCode == KeyEvent.VK_UP) {
-                    positionJoueur -= lab.getLongueur();
-                    lab.afficher(positionJoueur);
-                }
-                else if (keyCode == KeyEvent.VK_DOWN) {
-                    positionJoueur += lab.getLongueur();
-                    lab.afficher(positionJoueur);
-                }
-                else if (keyCode == KeyEvent.VK_LEFT) {
-                    positionJoueur--;
-                    lab.afficher(positionJoueur);
-                }
-                else if (keyCode == KeyEvent.VK_RIGHT) {
-                    positionJoueur++;
-                    lab.afficher(positionJoueur);
-                }
-            }
-        });
-
-        myJFrame.setVisible(true);
     }
 }
 

@@ -322,17 +322,22 @@ public class JeuLabyrinthe {
     }
     
     private static void creerPartie() {
+        
+        final char NORD  = 'N',
+                   EST   = 'E',
+                   SUD   = 'S',
+                   OUEST = 'W';
+        
         final Labyrinthe labyrinthe = new Labyrinthe(dimensionsLabyrinthe[0],
-                dimensionsLabyrinthe[1]);
+                                                     dimensionsLabyrinthe[1],
+                                                     difficulteLabyrinthe);
 
         labyrinthe.constructionBacktracking();
         
         nettoyerConsole(50);
-        labyrinthe.afficher(0);
+        labyrinthe.afficher();
 
         application.addKeyListener(new KeyAdapter() {
-
-            int positionJoueur = 0;
 
             public void keyPressed(KeyEvent e) {
 
@@ -341,24 +346,20 @@ public class JeuLabyrinthe {
                 if (joueurEnjeu) {
                     switch (toucheCode) {
                     case KeyEvent.VK_UP:
-                        positionJoueur -= labyrinthe.getLongueur();
                         nettoyerConsole(50);
-                        labyrinthe.afficher(positionJoueur);
+                        labyrinthe.deplacerJoueur(NORD);
                         break;
                     case KeyEvent.VK_DOWN:
-                        positionJoueur += labyrinthe.getLongueur();
                         nettoyerConsole(50);
-                        labyrinthe.afficher(positionJoueur);
+                        labyrinthe.deplacerJoueur(SUD);
                         break;
                     case KeyEvent.VK_LEFT:
-                        positionJoueur--;
                         nettoyerConsole(50);
-                        labyrinthe.afficher(positionJoueur);
+                        labyrinthe.deplacerJoueur(OUEST);
                         break;
                     case KeyEvent.VK_RIGHT:
-                        positionJoueur++;
                         nettoyerConsole(50);
-                        labyrinthe.afficher(positionJoueur);
+                        labyrinthe.deplacerJoueur(EST);
                         break;
                     case KeyEvent.VK_Q:
                         joueurEnjeu = false;

@@ -5,10 +5,10 @@
 
 package application.pile;
 
-import application.labyrinthe.Sommet;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import application.labyrinthe.Sommet;
 
 /** 
  * TODO comment class responsibility (SRP)
