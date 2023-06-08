@@ -66,6 +66,17 @@ public class JeuLabyrinthe {
                                                      "Dimensions : %d x %d",
                                                      "Retour"},
                                                   {"QUITTER"}};
+    
+    /** Initialisations des touches utilisées */
+    private final static int DEPLACEMENT_NORD  = KeyEvent.VK_UP;
+    private final static int DEPLACEMENT_SUD   = KeyEvent.VK_DOWN;
+    private final static int DEPLACEMENT_EST   = KeyEvent.VK_RIGHT;
+    private final static int DEPLACEMENT_OUEST = KeyEvent.VK_LEFT;
+    private final static int VALIDER    = KeyEvent.VK_ENTER;
+    private final static int QUITTER    = KeyEvent.VK_Q;
+    private final static int RELANCER   = KeyEvent.VK_R;
+    private final static int ABANDONNER = KeyEvent.VK_A;
+    private final static int FERMER = KeyEvent.VK_ESCAPE;
 
     /** Menu actif, sur lequel le joueur se situe */
     private static int menuActif = 0;
@@ -130,7 +141,7 @@ public class JeuLabyrinthe {
                 switch (toucheCode) {
 
                 // Choix du sous-menu supérieur
-                case KeyEvent.VK_UP:
+                case DEPLACEMENT_NORD:
                     if(optionMenuCible > 1) {
                         optionMenuCible--;
                         afficherMenu();
@@ -138,7 +149,7 @@ public class JeuLabyrinthe {
                     break;
                     
                 // Choix du sous-menu inférieur
-                case KeyEvent.VK_DOWN:
+                case DEPLACEMENT_SUD:
                     if(   menuActif == 0 && optionMenuCible < tailleMenuActif
                     || menuActif != 0 && optionMenuCible < tailleMenuActif -1) {
                         optionMenuCible++;
@@ -147,7 +158,7 @@ public class JeuLabyrinthe {
                     break;
                 
                 // Dispertion des méthodes appellées par la touche [ENTER]
-                case KeyEvent.VK_ENTER:
+                case VALIDER:
                     if (menuActif == 0) {
 
                         if (optionMenuCible == tailleMenuActif) {
@@ -183,7 +194,7 @@ public class JeuLabyrinthe {
                     break;
                 
                 // Fermer l'application
-                case KeyEvent.VK_ESCAPE:
+                case FERMER:
                     APPLICATION.dispose();
                     break;
                     
@@ -201,21 +212,21 @@ public class JeuLabyrinthe {
                 switch (toucheCode) {
 
                 // Incrementation de la valeur dimension traité en cours
-                case KeyEvent.VK_UP:
+                case DEPLACEMENT_NORD:
                     dimensionsLabyrinthe[dimensionModifiee]++;
                     setBornesDimension(dimensionModifiee);
                     afficherMenu();
                     break;
                     
                 // Decrementation de la valeur dimension traité en cours
-                case KeyEvent.VK_DOWN:
+                case DEPLACEMENT_SUD:
                     dimensionsLabyrinthe[dimensionModifiee]--;
                     setBornesDimension(dimensionModifiee);
                     afficherMenu();
                     break;
                     
                 // Modification de la longueur et hauteur dans les paramètres
-                case KeyEvent.VK_ENTER:
+                case VALIDER:
                     if(dimensionModifiee == 0) {
                         dimensionModifiee++;
                     } else {
@@ -225,7 +236,7 @@ public class JeuLabyrinthe {
                     break;
                     
                 // Fermer l'application
-                case KeyEvent.VK_ESCAPE:
+                case FERMER:
                     APPLICATION.dispose();
                     break;
                 
@@ -403,13 +414,13 @@ public class JeuLabyrinthe {
                    EST   = 'E',
                    SUD   = 'S',
                    OUEST = 'W';
-        
+                
         labyrintheEnCours = creerLabyrinthe();
         
         afficherLabyrinthe(NORD);
 
         APPLICATION.addKeyListener(new KeyAdapter() {
-
+                        
             public void keyPressed(KeyEvent e) {
 
                 int toucheCode = e.getKeyCode();
@@ -418,27 +429,27 @@ public class JeuLabyrinthe {
                     switch (toucheCode) {
                     
                     // Affichage et déplacement du joueur vers le nord
-                    case KeyEvent.VK_UP:
+                    case DEPLACEMENT_NORD:
                         afficherLabyrinthe(NORD);
                         break;
                         
                     // Affichage et déplacement du joueur vers le sud
-                    case KeyEvent.VK_DOWN:
+                    case DEPLACEMENT_SUD:
                         afficherLabyrinthe(SUD);
                         break;
                         
                     // Affichage et déplacement du joueur vers l'ouest
-                    case KeyEvent.VK_LEFT:
+                    case DEPLACEMENT_OUEST:
                         afficherLabyrinthe(OUEST);
                         break;
                       
                     // Affichage et déplacement du joueur vers l'est
-                    case KeyEvent.VK_RIGHT:
+                    case DEPLACEMENT_EST:
                         afficherLabyrinthe(EST);
                         break;
                         
                     // Fermeture de la fenetre de jeu et retour au salon
-                    case KeyEvent.VK_Q:
+                    case QUITTER:
                         joueurEnjeu      = false;
                         joueurDansLeMenu = true;
                         
@@ -447,19 +458,19 @@ public class JeuLabyrinthe {
                         afficherMenu();
                         break;
                         
-                    case KeyEvent.VK_R:
+                    case RELANCER:
                         labyrintheEnCours = creerLabyrinthe();
                         afficherLabyrinthe(NORD);
                         break;
                         
                     // Abandon du joueur et don de la solution
-                    case KeyEvent.VK_A:
+                    case ABANDONNER:
                         nettoyerConsole(50);
                         labyrintheEnCours.terminer();
                         break;
                         
                     // Fermeture de l'application
-                    case KeyEvent.VK_ESCAPE:
+                    case FERMER:
                         APPLICATION.dispose();
                         break;
                         
