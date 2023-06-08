@@ -1,0 +1,10 @@
+      ______ _______ ______ _______ ___ ___ _______ _______ ______ _______ _______       
+     |   __ \   _   |   __ \   _   |   |   |    ___|_     _|   __ \    ___|     __|
+     |    __/       |      <       |       |    ___|▀|   |▀|      <    ___|__     |
+     |___|▀▀|___|___|___|__|___|___|__|_|__|_______| |___| |___|__|_______|_______|
+      ▀▀▀    ▀▀▀ ▀▀▀ ▀▀▀ ▀▀ ▀▀▀ ▀▀▀ ▀▀ ▀ ▀▀ ▀▀▀▀▀▀▀   ▀▀▀   ▀▀▀ ▀▀ ▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀
+ 
+   Vous pouvez modifier les paramètres du jeu dans ce menu.
+   
+   Appuyer sur [ENTER] pour modifier la difficulté (Facile, Difficile)
+   Appuyer sur [ENTER] et [ARROW_UP][ARROW_DOWN] pour modifier les dimentions (%d, %d)

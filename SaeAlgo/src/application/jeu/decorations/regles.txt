@@ -1,0 +1,15 @@
+                    ______ _______ _______ _____   _______ _______ 
+                   |   __ \    ___|     __|     |_|    ___|     __|
+                   |      <    ___|    |  |       |    ___|__     |
+                   |___|__|_______|_______|_______|_______|_______|                
+                    ▀▀▀ ▀▀ ▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀
+    
+    Vous allez contrôler un personnage, aidez-le à sortir du labyrinthe pour gagner.
+    La sortie est modélisée pour un 'X' et votre personnage par un 'o'.
+    Les contrôles à utiliser sont [ARROW_UP][ARROW_DOWN][ARROW_LEFT][ARROW_RIGHT].
+    Durant le jeu vos déplacements seront comptés et comparés avec le nombre de 
+    déplacements optimales pour résoudre le labyrinthe.
+    
+    Appuyer sur [ESCAP] pour quitter le jeu à tout moment.
+    
+    © 2022/2023 iut de Rodez - Thomas.Izard, Thomas.Lemaire, Constant.Nguyen
