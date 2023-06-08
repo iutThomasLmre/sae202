@@ -12,64 +12,47 @@ package application.labyrinthe;
  * 
  * @author thomas.izard
  * @author thomas.lemaire
+ * @author constant.nguyen
  */
 public class Sommet {
     private int numero;
     private boolean parcouru;
 
     /**
-     * TODO comment initial state
+     * Constructeur du sommet
      * @param numero
      */
     public Sommet(int numero) {
-        if(!estValide(numero)) {
+        if(!(numero >= 0 && numero < Integer.MAX_VALUE - 1)) {
             throw new IllegalArgumentException();
         }
         this.numero = numero;
         this.parcouru = false;
     }
 
-    /**
-     * TODO comment method role
-     * @return .
-     */
+    /** @return la valeur du numéro du sommet */
     public int getNumero() {
         return numero;
     }
 
-    /**
-     * TODO comment method role
-     * @return .
-     */
+    /** @return true, si le sommet a été parcourus, sinon false */
     public boolean estParcouru() {
         return parcouru;
     }
 
-    /**
-     * TODO comment method role
-     *
-     */
+    /** Méthode qui permet de marquer le sommet comme étant parcourus */
     public void marquerParcouru() {
         parcouru = true;
     }
 
-    /**
-     * 
-     */
+    /** Méthode qui permet de supprimer la marque parcourus du sommet */
     public void demarquerParcouru() {
         parcouru = false;
     }
 
+    /** Méthode permettant de transformer en chaine de charactère le sommet */
     public String toString() {
         Integer tempNumero = this.numero;
         return "p" + tempNumero.toString();
-    }
-
-    /**
-     * TODO comment method role
-     * @param numero
-     */
-    private static boolean estValide(int numero) {
-        return numero >= 0 && numero < Integer.MAX_VALUE - 1;
     }
 }

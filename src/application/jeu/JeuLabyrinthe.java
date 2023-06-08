@@ -25,10 +25,13 @@ public class JeuLabyrinthe {
 
     /** Création de l'application */
     private final static JFrame APPLICATION = new JFrame();
+    
+    /** Le labyrinthe */
+    private static Labyrinthe labyrintheEnCours;
 
     /** Chemin d'origine de localisation des décorations */
     private final static String CHEMIN_DECORATION
-                                = "src/application/jeu/decorations/";
+                                = "decorations/titres/";
 
     /** Chemin de la decoration "labyrinthe" */
     private final static String CHEMIN_DECORATION_LABYRINTHE = CHEMIN_DECORATION 
@@ -76,7 +79,7 @@ public class JeuLabyrinthe {
     private final static int QUITTER    = KeyEvent.VK_Q;
     private final static int RELANCER   = KeyEvent.VK_R;
     private final static int ABANDONNER = KeyEvent.VK_A;
-    private final static int FERMER = KeyEvent.VK_ESCAPE;
+    private final static int FERMER     = KeyEvent.VK_ESCAPE;
 
     /** Menu actif, sur lequel le joueur se situe */
     private static int menuActif = 0;
@@ -107,7 +110,8 @@ public class JeuLabyrinthe {
     private static int[] dimensionsLabyrinthe = {7, 5};
 
     /**
-     * TODO comment method role
+     * Programme principale de l'application, qui lance l'instance qui capture
+     * les actions du joueur.
      * @param args
      */
     public static void main(String[] args) {
@@ -134,11 +138,12 @@ public class JeuLabyrinthe {
             }
 
             /** 
-             * 
-             * @param toucheCode
+             * Associations des fonctions par rapport aux touches du menu 
+             * pricipal
+             * @param toucheFrappee , la touche frappee par l'utilisateur
              */
-            private void keyListenerMenu(int toucheCode) {
-                switch (toucheCode) {
+            private void keyListenerMenu(int toucheFrappee) {
+                switch (toucheFrappee) {
 
                 // Choix du sous-menu supérieur
                 case DEPLACEMENT_NORD:
@@ -205,11 +210,13 @@ public class JeuLabyrinthe {
             }
 
             /** 
-             * 
-             * @param toucheCode
+             * Associations des fonctions par rapport aux touches qui servent
+             * à la modification des dimensions du labyrinthe dans le menu
+             * paramètre.
+             * @param toucheFrappee , la touche frappee par l'utilisateur
              */
-            private void keyListenerDimensions(int toucheCode) {
-                switch (toucheCode) {
+            private void keyListenerDimensions(int toucheFrappee) {
+                switch (toucheFrappee) {
 
                 // Incrementation de la valeur dimension traité en cours
                 case DEPLACEMENT_NORD:
@@ -250,10 +257,7 @@ public class JeuLabyrinthe {
         afficherMenu();
     }
 
-    /**
-     * TODO comment method role
-     *
-     */
+    /** Méthode d'affichage du menu */
     private static void afficherMenu() {
         nettoyerConsole(50);
         afficherDecorationMenu();
@@ -349,7 +353,8 @@ public class JeuLabyrinthe {
     }
 
     /**
-     * TODO comment method role
+     * Méthode qui permet de "nettoyer" la console en sautant un certain nombre
+     * de ligne.
      * @param ligneSautee
      */
     private static void nettoyerConsole(int ligneSautee) {
@@ -358,13 +363,18 @@ public class JeuLabyrinthe {
         }
     }
 
+    /** Méthode qui définit la difficulté */
     private static void setDifficulte() {
         difficulteLabyrinthe = (difficulteLabyrinthe + 1) % 2;
     }
 
     /**
-     * TODO comment method role
-     * @param dimensionModifiee
+     * Méthode qui permet de définir les bornes des dimensions,
+     * longueur et hauteur du labyrinthe
+     * @param dimensionModifiee , correspond à : 
+     *  <ul><li> 0 : la longueur
+     * </li><li> 1 : la hauteur
+     * </li></ul>
      */
     private static void setBornesDimension(int dimensionModifiee) {
         if (dimensionsLabyrinthe[dimensionModifiee] 
@@ -379,8 +389,9 @@ public class JeuLabyrinthe {
     }
     
     /**
-     * TODO comment method role
-     * @return
+     * Méthode permettant de créer un nouveau labyrinthe de le construire 
+     * et de l'afficher
+     * @return le labyrinthe construit
      */
     private static Labyrinthe creerLabyrinthe() {
         Labyrinthe labyrinthe = new Labyrinthe(dimensionsLabyrinthe[0],
@@ -395,8 +406,7 @@ public class JeuLabyrinthe {
         return labyrinthe;
     }
     
-    private static Labyrinthe labyrintheEnCours;
-    
+    /** Méthode qui affiche le labyrinthe ainsi que les consignes */
     private static void afficherLabyrinthe(char deplacement) {
         nettoyerConsole(50);
         
@@ -405,9 +415,17 @@ public class JeuLabyrinthe {
         System.out.println("[R] Relancer une partie");
         System.out.println("[Q] Quitter le jeu");
         
-        labyrintheEnCours.deplacerJoueur(deplacement);
+        if (deplacement != 'X') {
+            labyrintheEnCours.deplacerJoueur(deplacement);
+        } else {
+            labyrintheEnCours.terminer();
+        }
     }
     
+    /** 
+     * Méthodes qui permet de créer une partie et d'associé les actions du
+     * joueur à des fonctions de déplacements, ou de fonctionalités tierces 
+     */
     private static void creerPartie() {
         
         final char NORD  = 'N',
@@ -420,7 +438,11 @@ public class JeuLabyrinthe {
         afficherLabyrinthe(NORD);
 
         APPLICATION.addKeyListener(new KeyAdapter() {
-                        
+
+            /** 
+             * Initialisation des fonctions liées aux touches 
+             * que le joueur peut actionner 
+             */
             public void keyPressed(KeyEvent e) {
 
                 int toucheCode = e.getKeyCode();
@@ -466,7 +488,7 @@ public class JeuLabyrinthe {
                     // Abandon du joueur et don de la solution
                     case ABANDONNER:
                         nettoyerConsole(50);
-                        labyrintheEnCours.terminer();
+                        afficherLabyrinthe('X'); 
                         break;
                         
                     // Fermeture de l'application

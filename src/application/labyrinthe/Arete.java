@@ -5,40 +5,37 @@
 package application.labyrinthe;
 
 /** 
- * TODO comment class responsibility (SRP)
+ * Classe permettant de créer une arête composée de 2 sommets qui représente
+ * un lien.
+ * @author thomas.izard
  * @author thomas.lemaire
+ * @author constant.nguyen
  */
 public class Arete {
     private Sommet sommetA;
     private Sommet sommetB;
 
-    /** TODO comment initial state
-     * @param sommetA
-     * @param sommetB
+    /**
+     * Constructeur de l'arêtes
+     * @param sommetA , premier sommet de l'arête
+     * @param sommetB , second sommet de l'arête
      */
     public Arete(Sommet sommetA, Sommet sommetB) {
         this.sommetA = sommetA;
         this.sommetB = sommetB;
     }
 
-    /**
-     * TODO comment method role
-     * @return 0
-     */
+    /** @return la valeur du sommet A */
     public Sommet getSommetA() {
         return sommetA;
     }
 
-    /**
-     * TODO comment method role
-     * @return 0
-     */
+    /** @return la valeur du sommet B */
     public Sommet getSommetB() {
         return sommetB;
     }
     
-    /**
-     */
+    /** @return la représentation en chaine de caractère de l'arête */
     public String toString() {
         return "(" + sommetA + ", " + sommetB + ")";
     }

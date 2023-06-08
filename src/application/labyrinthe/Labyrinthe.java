@@ -7,11 +7,13 @@ package application.labyrinthe;
 import java.util.ArrayList;
 import java.util.List;
 
-import application.pile.File;
+import application.pile.PileContigue;
 
 /** 
- * TODO comment class responsibility (SRP)
+ * Classe pricipale qui permet de générer et gérer un joueur dans un labyrinthe.
+ * @author thomas.izard
  * @author thomas.lemaire
+ * @author constant.nguyen
  */
 public class Labyrinthe {
 
@@ -38,29 +40,46 @@ public class Labyrinthe {
     /** Hauteur du labyrinthe */
     private int hauteur;
 
+    /** Niveau de difficulte du labyrinthe
+     *  <ul><li> 0 : facile
+     * </li><li> 1 : difficile
+     * </li></ul>
+     */
     private int difficulte;
 
+    /** Position initiale du joueur sur le sommet 0 du labyrinthe */
     private int positionJoueur = 0;
 
+    /** Position de la sortie du labyrinthe sur un sommet du labyrinthe */
     private int positionArrivee;
     
+    /** Liste qui contient le parcours optimale
+     *  <ul><li> true  : le sommet fait partis du parcours optimal
+     * </li><li> false : le sommet ne fait pas partis du parcours optimal
+     * </li></ul>
+     */
     private boolean[] passageParcours;
     
+    /** Compteur du nombre de coups du joueur */
     private int nombreCoupsJoueur = 0;
+    
+    /** Compteur du nombre de coups du parcours optimal */
     private int nombreCoupsMachine;
     
+    /** Booléen qui vérifie l'état de la partie en cours */
     private boolean jeuEnCours = true;
     
+    /** Booléen qui vérifie une condition d'arrêt du jeu : si le joueur gagne */
     private boolean joueurGagne = false;
 
     /**
-     * TODO comment initial state
-     * @param longueur 
-     * @param hauteur 
-     * @param difficulte 
+     * Constructeur du labyrinthe
+     * @param longueur , la lalongueur du labyrinthe
+     * @param hauteur , la hauteur du labyrinthe
+     * @param difficulte , la difficulte du labyrinthe
      */
     public Labyrinthe(int longueur, int hauteur, int difficulte) {
-        if (!isValide(longueur * hauteur)) {
+        if (!(longueur * hauteur >= 4)) {
             throw new IllegalArgumentException();
         }
 
@@ -73,6 +92,8 @@ public class Labyrinthe {
         this.difficulte = difficulte;
 
         this.passageParcours = new boolean[nombreSommets];
+        
+        // Initialisation de la position de la sortie au dernier sommmet 
         this.positionArrivee = nombreSommets-1;
 
         // Création des pièces (sommets) du labyrinthe (graphe)
@@ -82,13 +103,13 @@ public class Labyrinthe {
         }
     }
 
-    /**
-     * TODO comment method role
-     *
+    /** 
+     * Génère le parcours du labyrinthe en utilisant l'algorithme
+     * du parcours en profondeur.
      */
     public void constructionParcours() {
 
-        File file;
+        PileContigue<Sommet> pileSommet;
         int sommetAleatoire;
         int voisinAleatoire;
         Sommet sommetInitial;
@@ -99,25 +120,25 @@ public class Labyrinthe {
         sommetInitial.marquerParcouru();
 
         // Créer une pile LIFO initialement vide
-        file = new File();
+        pileSommet = new PileContigue<Sommet>();
         // Empiler le sommet courant (initial) à traiter
-        file.empiler(sommetInitial);
+        pileSommet.empiler(sommetInitial);
 
 
-        // Parcours en backtrack jusqu'à ce que tous les sommets soient parcourus
-        while (!file.estVide()) {
-            Sommet sommetCourant = (Sommet) file.getSommet();
+        //Parcours en backtrack jusqu'à ce que tous les sommets soient parcourus
+        while (!pileSommet.isVide()) {
+            Sommet sommetCourant = (Sommet) pileSommet.sommet();
             List<Sommet> voisinsNonParcourus 
             = trouverVoisinsNonParcourus(sommetCourant);
 
             if (voisinsNonParcourus.isEmpty()) {
 
                 // Dépiler le sommet courant
-                file.depiler();
+                pileSommet.depiler();
 
                 // Le nouveau sommet de pile devient le sommet courant
-                if (!file.estVide()) {
-                    sommetCourant = (Sommet) file.getSommet();
+                if (!pileSommet.isVide()) {
+                    sommetCourant = (Sommet) pileSommet.sommet();
                 }
             } else {
                 // Choisir aléatoirement un des voisins non parcouru
@@ -135,7 +156,7 @@ public class Labyrinthe {
                 voisinChoisi.marquerParcouru();
 
                 // Devient le sommet courrant en étant empilé
-                file.empiler(voisinChoisi);
+                pileSommet.empiler(voisinChoisi);
             }
         }
 
@@ -143,9 +164,9 @@ public class Labyrinthe {
     }
 
     /**
-     * TODO comment method role
-     * @param sommet
-     * @return 0
+     * trouve les voisins non parcourus d'un sommet donné.
+     * @param sommet , sommet donné
+     * @return une liste de sommet voisin
      */
     public List<Sommet> trouverVoisinsNonParcourus(Sommet sommet) {
         List<Sommet> voisinsNonParcourus = new ArrayList<Sommet>();
@@ -181,27 +202,24 @@ public class Labyrinthe {
     }
 
     /**
-     * TODO comment method role
-     * @return
+     * Construit la représentation des arêtes du labyrinthe.
+     * @return , une liste de booléen représentant le parcours optimal
      */
     private boolean[][] constructionRepresentation() {
 
-        boolean[][] aRetourner = new boolean[nombreSommets][nombreSommets];
+        boolean[][] parcoursValide = new boolean[nombreSommets][nombreSommets];
         Arete areteCourante;
 
         for (int i = 0; i < aretes.size(); i++) {
             areteCourante = aretes.get(i);
-            aRetourner[areteCourante.getSommetA().getNumero()]
-                      [areteCourante.getSommetB().getNumero()] = true;
+            parcoursValide[areteCourante.getSommetA().getNumero()]
+                          [areteCourante.getSommetB().getNumero()] = true;
         }
 
-        return aRetourner;
+        return parcoursValide;
     }
 
-    /**
-     * TODO comment method role
-     *
-     */
+    /** Réinitialise le parcours du labyrinthe. */
     public void renitialiserParcours() {
         for (int i = 0; i < nombreSommets; i++) {
             sommets.get(i).demarquerParcouru();
@@ -209,9 +227,10 @@ public class Labyrinthe {
     }
     
     /**
-     * TODO comment method role
-     * @param sommet
-     * @return
+     * Trouve les voisins non parcourus valides (avec une porte)
+     * d'un sommet donné.
+     * @param sommet , sommet donné
+     * @return une liste des sommets voisin qui sont pas parcourus
      */
     private List<Sommet> trouverVoisinsNonParcourusValide(Sommet sommet) {
         
@@ -255,12 +274,13 @@ public class Labyrinthe {
     }
 
     /**
-     * @param sommetEntree 
-     * @param sommetSortie 
+     * Réalise le parcours en profondeur pour trouver le parcours optimal.
+     * @param sommetEntree , le sommet d'entrée
+     * @param sommetSortie , le sommet de sortie
      */
     public void parcoursProfondeur() {
 
-        File file;
+        PileContigue<Sommet> pileSommet;
         int randomVoisin;
         Sommet sommetEntree = sommets.get(0);
         Sommet sommetSortie = sommets.get(sommets.size() - 1);
@@ -268,40 +288,42 @@ public class Labyrinthe {
         sommetEntree.marquerParcouru();
 
         // Créer une pile LIFO initialement vide
-        file = new File();
+        pileSommet = new PileContigue<Sommet>();
         // Empiler le sommet courant (initial) à traiter
-        file.empiler(sommetEntree);
-        // Parcours en backtrack jusqu'à ce que tous les sommets soient parcourus
-        while (file.getSommet() != sommetSortie) {
-            Sommet sommetCourant = (Sommet) file.getSommet();
+        pileSommet.empiler(sommetEntree);
+        //Parcours en backtrack jusqu'à ce que tous les sommets soient parcourus
+        while (pileSommet.sommet() != sommetSortie) {
+            Sommet sommetCourant = (Sommet) pileSommet.sommet();
             List<Sommet> voisinsNonParcourusValide 
                 = trouverVoisinsNonParcourusValide(sommetCourant);
             if (voisinsNonParcourusValide.isEmpty()) {
                 // Dépiler le sommet courant
-                file.depiler();
-                // Le nouveau sommet de pile devient le sommet courant (si pile vide)
-                if (!file.estVide()) {
-                    sommetCourant = (Sommet) file.getSommet();
+                pileSommet.depiler();
+                // Le nouveau sommet de pile devient le sommet courant
+                if (!pileSommet.isVide()) {
+                    sommetCourant = (Sommet) pileSommet.sommet();
                 }
             } else {
                 // Choisir aléatoirement un des voisins non parcouru
-                randomVoisin = (int)(Math.random() * voisinsNonParcourusValide.size());
-                Sommet voisinChoisi = voisinsNonParcourusValide.get(randomVoisin);
+                randomVoisin = (int)(Math.random() 
+                               * voisinsNonParcourusValide.size());
+                Sommet voisinChoisi 
+                             = voisinsNonParcourusValide.get(randomVoisin);
                 sommetCourant = voisinChoisi;
                 // Parcourir le voisin
                 sommetCourant.marquerParcouru();
                 // Devient le sommet courrant en étant empilé
-                file.empiler(sommetCourant);
+                pileSommet.empiler(sommetCourant);
             }
         }
         
-        this.nombreCoupsMachine = file.getTaille() -1;
+        this.nombreCoupsMachine = pileSommet.taille() -1;
         
         List<Sommet> parcours = new ArrayList<Sommet>();
         
-        for (int i = file.getTaille(); i > 0 ;i--) {
-            parcours.add((Sommet) file.getSommet());
-            file.depiler();
+        for (int i = pileSommet.taille(); i > 0 ;i--) {
+            parcours.add((Sommet) pileSommet.sommet());
+            pileSommet.depiler();
         }
         
         for (int i = 0; i < parcours.size(); i++) {
@@ -310,8 +332,9 @@ public class Labyrinthe {
     }
 
     /**
-     * TODO comment method role
-     * @param direction
+     * déplace le joueur dans le labyrinthe en fonction
+     * de la direction spécifiée.
+     * @param direction , NORD (N) SUD (S) EST (E) ou OUEST (O)
      */
     public void deplacerJoueur(char direction) {
 
@@ -336,8 +359,10 @@ public class Labyrinthe {
             break;
         case 'S':
             if (    positionJoueur + longueur < nombreSommets
-                && (representationAretes[positionJoueur][positionJoueur+longueur]
-                ||  representationAretes[positionJoueur+longueur][positionJoueur])
+                && (representationAretes[positionJoueur]
+                                        [positionJoueur+longueur]
+                ||  representationAretes[positionJoueur+longueur]
+                                        [positionJoueur])
                 && jeuEnCours) {
                 positionJoueur += longueur;
                 nombreCoupsJoueur++;
@@ -365,10 +390,7 @@ public class Labyrinthe {
         }
     }
 
-    /**
-     * TODO comment method role
-     *
-     */
+    /** Méthode qui donne les informations de fin de jeu quant il à fini */
     public void terminer() {
         this.jeuEnCours = false;
         this.difficulte = 0;
@@ -387,18 +409,14 @@ public class Labyrinthe {
         }
     }
     
-    /**
-     * TODO comment method role
-     * @return
-     */
+    /** @return le score du joueur une fois le labyrinthe fini */
     private int calculScore() {
-        return (nombreSommets * 1000 / (nombreCoupsJoueur * (nombreCoupsMachine + 1)) * 1000) 
+        return (nombreSommets * 1000 / (nombreCoupsJoueur 
+                * (nombreCoupsMachine + 1)) * 1000) 
                 * (1 + difficulte * (nombreSommets / 2)) / 1000;
     }
 
-    /**
-     * TODO comment method role 
-     */
+    /** Affichage du labyrinthe */
     public void afficher() {
 
         int k = 0;
@@ -471,11 +489,13 @@ public class Labyrinthe {
                             ||  representationAretes[j+k+longueur][j+k]
                             &&  (difficulte == 0
                             ||  (difficulte == 1 && positionJoueur-j-k == 0)
-                            ||  (difficulte == 1 && positionJoueur-j-k == longueur)))){
+                            ||  (difficulte == 1 && positionJoueur-j-k 
+                                                                == longueur)))){
                         System.out.printf("   %s", separation);
                     } else if (   difficulte == 0
                             || (difficulte == 1 && positionJoueur-j-k == 0)
-                            || (difficulte == 1 && positionJoueur-j-k == longueur)){
+                            || (difficulte == 1 && positionJoueur-j-k 
+                                                                  == longueur)){
                         System.out.printf("─▬▬%s", separation);
                     } else {
                         System.out.print("    ");
@@ -499,17 +519,7 @@ public class Labyrinthe {
         }
         System.out.print("┘\n");
     }
-    
-    /**
-     * @param  nombreSalles , le résultat de la multiplication de la longueur et 
-     *         de la hauteur du labyrinthe
-     * @return true si le nombre de salles du labyrinthe est supérieur ou égal à 4,
-     *         false sinon
-     */
-    private boolean isValide(int nombreSalles) {
-        return nombreSalles >= 4;
-    }
-    
+        
     /** @return La liste des aretes représentant les portes du labyrinthe */
     public List<Arete> getAretes() {
         return this.aretes;
