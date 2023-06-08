@@ -34,10 +34,10 @@ class TestLabyrinthe {
     void setUp() throws Exception {
         // Créer un labyrinthe avec 35 pièces
         correctes = new ArrayList<Labyrinthe>();
-        correctes.add(new Labyrinthe(7, 5));
-        correctes.add(new Labyrinthe(2, 1));
-        correctes.add(new Labyrinthe(4, 6));
-        correctes.add(new Labyrinthe(2, 2));
+        correctes.add(new Labyrinthe(7, 5, 0));
+        correctes.add(new Labyrinthe(2, 1, 0));
+        correctes.add(new Labyrinthe(4, 6, 0));
+        correctes.add(new Labyrinthe(2, 2, 0));
     }
 
     /** TODO comment method role */

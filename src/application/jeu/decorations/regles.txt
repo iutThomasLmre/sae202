@@ -12,4 +12,4 @@
     
     Appuyer sur [ESCAP] pour quitter le jeu à tout moment.
     
-    © 2022/2023 iut de Rodez - Thomas.Izard, Thomas.Lemaire, Constant.Nguyen
+    © 2022/2023 iut de Rodez - Thomas.Izard, Kévin.Laury, Thomas.Lemaire, Constant.Nguyen

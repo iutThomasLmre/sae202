@@ -5,7 +5,6 @@
 package application.labyrinthe;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import application.pile.File;
@@ -31,7 +30,7 @@ public class Labyrinthe {
      * </li><li> 1 : une porte est présente 
      * </li></ul>
      */
-    private int[][] representationAretes;
+    private boolean[][] representationAretes;
 
     /** Longueur du labyrinthe */
     private int longueur;
@@ -42,12 +41,17 @@ public class Labyrinthe {
     private int difficulte;
 
     private int positionJoueur = 0;
-    private int nombreCoups = 0;
+
     private int positionArrivee;
     
     private boolean[] passageParcours;
     
+    private int nombreCoupsJoueur = 0;
+    private int nombreCoupsMachine;
+    
     private boolean jeuEnCours = true;
+    
+    private boolean joueurGagne = false;
 
     /**
      * TODO comment initial state
@@ -178,45 +182,17 @@ public class Labyrinthe {
 
     /**
      * TODO comment method role
-     *
-     */
-    public void sauvegarder() {
-        // TODO Faire le script de sauvegarde
-    }
-
-    /** @return La liste des aretes représentant les portes du labyrinthe */
-    public List<Arete> getAretes() {
-        return this.aretes;
-    }
-
-    /** @return La liste des sommets qui forment les salles du labyrinthe */
-    public List<Sommet> getSommets() {
-        return this.sommets;
-    }
-
-    /**
-     * @param  nombreSalles , le résultat de la multiplication de la longueur et 
-     *         de la hauteur du labyrinthe
-     * @return true si le nombre de salles du labyrinthe est supérieur ou égal à 4,
-     *         false sinon
-     */
-    private boolean isValide(int nombreSalles) {
-        return nombreSalles >= 4;
-    }
-
-    /**
-     * TODO comment method role
      * @return
      */
-    private int[][] constructionRepresentation() {
+    private boolean[][] constructionRepresentation() {
 
-        int[][] aRetourner = new int[nombreSommets][nombreSommets];
+        boolean[][] aRetourner = new boolean[nombreSommets][nombreSommets];
         Arete areteCourante;
 
         for (int i = 0; i < aretes.size(); i++) {
             areteCourante = aretes.get(i);
             aRetourner[areteCourante.getSommetA().getNumero()]
-                    [areteCourante.getSommetB().getNumero()] = 1;
+                      [areteCourante.getSommetB().getNumero()] = true;
         }
 
         return aRetourner;
@@ -246,32 +222,32 @@ public class Labyrinthe {
         // Vérification du voisin du haut
         if (   numeroSommet - longueur >= 0
             && !sommets.get(numeroSommet - longueur).estParcouru()
-            && (representationAretes[numeroSommet-longueur][numeroSommet] == 1
-            ||  representationAretes[numeroSommet][numeroSommet-longueur] == 1)) {
+            && (representationAretes[numeroSommet-longueur][numeroSommet]
+            ||  representationAretes[numeroSommet][numeroSommet-longueur])) {
             voisinsNonParcourusValide.add(sommets.get(numeroSommet - longueur));
         }
 
         // Vérification du voisin du bas
         if (   numeroSommet + longueur < this.nombreSommets
             && !sommets.get(numeroSommet + longueur).estParcouru()
-            && (representationAretes[numeroSommet+longueur][numeroSommet] == 1
-            ||  representationAretes[numeroSommet][numeroSommet+longueur] == 1)){
+            && (representationAretes[numeroSommet+longueur][numeroSommet]
+            ||  representationAretes[numeroSommet][numeroSommet+longueur])){
             voisinsNonParcourusValide.add(sommets.get(numeroSommet + longueur));
         }
 
         // Vérification du voisin de gauche
         if (   numeroSommet % longueur - 1 >= 0
             && !sommets.get(numeroSommet - 1).estParcouru()
-            && (representationAretes[numeroSommet][numeroSommet-1] == 1
-            ||  representationAretes[numeroSommet-1][numeroSommet] == 1)){
+            && (representationAretes[numeroSommet][numeroSommet-1]
+            ||  representationAretes[numeroSommet-1][numeroSommet])){
             voisinsNonParcourusValide.add(sommets.get(numeroSommet - 1));
         }
 
         // Vérification du voisin de droite
         if (   numeroSommet % longueur + 1 < longueur
             && !sommets.get(numeroSommet + 1).estParcouru()
-            && (representationAretes[numeroSommet][numeroSommet+1] == 1
-            ||  representationAretes[numeroSommet+1][numeroSommet] == 1)){
+            && (representationAretes[numeroSommet][numeroSommet+1]
+            ||  representationAretes[numeroSommet+1][numeroSommet])){
             voisinsNonParcourusValide.add(sommets.get(numeroSommet + 1));
         }
         
@@ -319,8 +295,10 @@ public class Labyrinthe {
             }
         }
         
-        System.out.println("Nombre de déplacements : " + (file.getTaille() -1));
+        this.nombreCoupsMachine = file.getTaille() -1;
+        
         List<Sommet> parcours = new ArrayList<Sommet>();
+        
         for (int i = file.getTaille(); i > 0 ;i--) {
             parcours.add((Sommet) file.getSommet());
             file.depiler();
@@ -340,38 +318,38 @@ public class Labyrinthe {
         switch (direction) {
         case 'N':
             if (    positionJoueur - longueur >= 0
-            && (representationAretes[positionJoueur][positionJoueur-longueur] == 1
-            ||  representationAretes[positionJoueur-longueur][positionJoueur] == 1)
+            && (representationAretes[positionJoueur][positionJoueur-longueur]
+            ||  representationAretes[positionJoueur-longueur][positionJoueur])
             && jeuEnCours) {
                 positionJoueur -= longueur;
-                nombreCoups++;
+                nombreCoupsJoueur++;
             }
             break;
         case 'E':
             if (    positionJoueur + 1 < nombreSommets
-                && (representationAretes[positionJoueur][positionJoueur+1] == 1
-                ||  representationAretes[positionJoueur+1][positionJoueur] == 1)
+                && (representationAretes[positionJoueur][positionJoueur+1]
+                ||  representationAretes[positionJoueur+1][positionJoueur])
                 && jeuEnCours) {
                 positionJoueur++;
-                nombreCoups++;
+                nombreCoupsJoueur++;
             }
             break;
         case 'S':
             if (    positionJoueur + longueur < nombreSommets
-                && (representationAretes[positionJoueur][positionJoueur+longueur] == 1
-                ||  representationAretes[positionJoueur+longueur][positionJoueur] == 1)
+                && (representationAretes[positionJoueur][positionJoueur+longueur]
+                ||  representationAretes[positionJoueur+longueur][positionJoueur])
                 && jeuEnCours) {
                 positionJoueur += longueur;
-                nombreCoups++;
+                nombreCoupsJoueur++;
             }
             break;
         case 'W':
             if (    positionJoueur - 1 >= 0
-                && (representationAretes[positionJoueur][positionJoueur-1] == 1
-                ||  representationAretes[positionJoueur-1][positionJoueur] == 1)
+                && (representationAretes[positionJoueur][positionJoueur-1]
+                ||  representationAretes[positionJoueur-1][positionJoueur])
                 && jeuEnCours) {
                 positionJoueur--;
-                nombreCoups++;
+                nombreCoupsJoueur++;
             }
             break;
         default:
@@ -380,6 +358,7 @@ public class Labyrinthe {
         }
 
         if (positionArrivee == positionJoueur) {
+            joueurGagne = true;
             terminer();
         } else {
             afficher();
@@ -393,9 +372,28 @@ public class Labyrinthe {
     public void terminer() {
         this.jeuEnCours = false;
         this.difficulte = 0;
+        
         renitialiserParcours();
         parcoursProfondeur();
+        
         afficher();
+        
+        if (joueurGagne) {
+            System.out.print("\nVous avez obtenu un score de : " 
+                             + calculScore()
+                             +"\nNombre de coups optimal : " 
+                             + nombreCoupsMachine
+                             +", votre nombre de coups : " + nombreCoupsJoueur);
+        }
+    }
+    
+    /**
+     * TODO comment method role
+     * @return
+     */
+    private int calculScore() {
+        return (nombreSommets * 1000 / (nombreCoupsJoueur * (nombreCoupsMachine + 1)) * 1000) 
+                * (1 + difficulte * (nombreSommets / 2)) / 1000;
     }
 
     /**
@@ -405,9 +403,8 @@ public class Labyrinthe {
 
         int k = 0;
 
-        System.out.println("Pour voir la solution : [S]");
-        System.out.println("Pour quitter le jeu   : [Q]");
-        System.out.printf("Nombre de coups réalisés : %d \n\n", nombreCoups);
+        System.out.printf("\nNombre de coups réalisés : "
+                          + "%d \n\n", nombreCoupsJoueur);
 
         for (int j = 0; j < longueur; j++) {
             if (   j == 0 && difficulte == 0
@@ -435,12 +432,13 @@ public class Labyrinthe {
             // Vérification des voisins de droite
             for (int j = 0; j < longueur; j++) {
                 
-                String remplirSalle = passageParcours[j+k] ? "#" : 
-                        positionJoueur == j + k ? "o" : positionArrivee == j + k ? "X" : " ";
+                String remplirSalle = passageParcours[j+k] ? 
+                                     "#" : positionJoueur == j + k ? 
+                                     "o" : positionArrivee == j + k ? "X" : " ";
 
                 if (   j+k+1 < nombreSommets
-                        && (representationAretes[j+k][j+k+1] == 1
-                        ||  representationAretes[j+k+1][j+k] == 1)
+                        && (representationAretes[j+k][j+k+1]
+                        ||  representationAretes[j+k+1][j+k])
                         &&  (difficulte == 0
                         ||   (difficulte == 1 && positionJoueur-j-k == 0)
                         ||   (difficulte == 1 && positionJoueur-j-k == 1))) {
@@ -469,8 +467,8 @@ public class Labyrinthe {
                     String separation = j != longueur-1 ? "┼" : "┤";
 
                     if (   j+k+longueur < nombreSommets
-                            && (representationAretes[j+k][j+k+longueur] == 1
-                            ||  representationAretes[j+k+longueur][j+k] == 1
+                            && (representationAretes[j+k][j+k+longueur]
+                            ||  representationAretes[j+k+longueur][j+k]
                             &&  (difficulte == 0
                             ||  (difficulte == 1 && positionJoueur-j-k == 0)
                             ||  (difficulte == 1 && positionJoueur-j-k == longueur)))){
@@ -492,7 +490,6 @@ public class Labyrinthe {
             }   
         }
 
-
         for (int j = 0; j < longueur; j++) {
             if (j == 0) {
                 System.out.print("└─▬▬");
@@ -502,7 +499,26 @@ public class Labyrinthe {
         }
         System.out.print("┘\n");
     }
+    
+    /**
+     * @param  nombreSalles , le résultat de la multiplication de la longueur et 
+     *         de la hauteur du labyrinthe
+     * @return true si le nombre de salles du labyrinthe est supérieur ou égal à 4,
+     *         false sinon
+     */
+    private boolean isValide(int nombreSalles) {
+        return nombreSalles >= 4;
+    }
+    
+    /** @return La liste des aretes représentant les portes du labyrinthe */
+    public List<Arete> getAretes() {
+        return this.aretes;
+    }
 
+    /** @return La liste des sommets qui forment les salles du labyrinthe */
+    public List<Sommet> getSommets() {
+        return this.sommets;
+    }
 
     /** @return valeur de hauteur */
     public int getHauteur() {
